@@ -1,9 +1,7 @@
 import { Router } from 'express';
-import { userRoute } from '../modules/User/user.route';
-import { gardeningPostsRoutes } from '../modules/GardeningPosts/gardeningPosts.route';
-import { commentsRoutes } from '../modules/Comments/comments.route';
 import { authRoute } from '../modules/Auth/auth.route';
-import { favouriteRoutes } from '../modules/FavouritePosts/favouritePosts.route';
+import { AdminRegRoutes } from '../modules/Admin/admin.routes';
+
 
 const router = Router();
 
@@ -13,21 +11,13 @@ const moduleRoutes = [
         route: authRoute,
     },
     {
-        path: '/posts',
-        route: gardeningPostsRoutes
+        path: '/admin',
+        route: AdminRegRoutes,
     },
-    {
-        path: '/comments',
-        route: commentsRoutes
-    },
-    {
-        path: '/users',
-        route: userRoute
-    },
-    {
-        path: '/favourites',
-        route: favouriteRoutes,
-    },
+    // {
+    //     path: '/users',
+    //     route: userRoute
+    // },
 ];
 
 moduleRoutes.forEach((route) => router.use(route.path, route.route));
