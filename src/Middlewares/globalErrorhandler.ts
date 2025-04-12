@@ -63,12 +63,14 @@ const globalErrorhandler = (err: any, req: Request, res: Response, next: NextFun
     }
 
     //ultimate return
-    return res.status(statusCode).json({
+    res.status(statusCode).json({
         success: false,
         message,
         errorMessages,
         stack: err?.stack,
     })
+
+    return
 }
 
 export default globalErrorhandler;
