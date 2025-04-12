@@ -13,4 +13,7 @@ router.route('/')
 router.route('/verify-otp')
     .post(UserControllers.verifyOtp)
 
+router.route('/login')
+    .post(UserControllers.login)
+
 export const UserRoutes = router;

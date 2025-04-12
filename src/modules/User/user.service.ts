@@ -18,7 +18,7 @@ const registerUserServices = async (payload: IUserInterface) => {
 const verifyOtpServices = async (payload: IUserInterface) => {
     const { user_phone, otp_code } = payload;
     const user = await userModel.findOne({ user_phone, otp_code });
-    
+
     if (!user) {
         throw new Error("Invalid OTP or phone number");
     }
@@ -33,7 +33,13 @@ const verifyOtpServices = async (payload: IUserInterface) => {
     return user;
 }
 
+// Login user with phone number and OTP
+const loginServices = async (payload: IUserInterface) => {
+
+}
+
 export const UserServices = {
     registerUserServices,
     verifyOtpServices,
+    loginServices,
 };  
