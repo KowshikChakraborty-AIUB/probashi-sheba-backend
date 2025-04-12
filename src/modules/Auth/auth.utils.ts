@@ -10,8 +10,7 @@ type TTokenUserData = {
     profileImg?: string;
     verified?: boolean;
     payment: boolean;
-    followers: Types.ObjectId[];
-    following: Types.ObjectId[];
+    admin_status: "active" | "in-active";
 };
 
 export const createToken = (
