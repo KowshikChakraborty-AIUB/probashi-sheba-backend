@@ -73,4 +73,5 @@ export interface IBMETRegistration {
     educational_qualifications: Types.ObjectId | IEducationalQualifications[];
     languages: Types.ObjectId | ILanguages[];
     supporting_documents: Types.ObjectId | ISupportingDocuments[];
+    //document_name: string[];
 }

@@ -96,6 +96,7 @@ const BMETSchema = new Schema<IBMETRegistration>(
             type: [SupportingDocumentSchema],
             default: [],
         },
+        //document_name: {type: [String], required: true}
     },
     {
         timestamps: true,
