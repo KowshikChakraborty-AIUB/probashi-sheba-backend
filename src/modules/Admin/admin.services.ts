@@ -68,8 +68,8 @@ const registerAdminServices = async (payload: IAdminInterface) => {
 
     const accessToken = createToken(
         jwtPayload,
-        config.jwt.jwt_secret as string,
-        config.jwt.jwt_expire_in as string,
+        config.jwt_access_secret as string,
+        config.jwt_access_expires_in as string,
     );
 
     return {
@@ -82,22 +82,22 @@ const registerAdminServices = async (payload: IAdminInterface) => {
 };
 
 //get all admins
-const getAllAdminsServices = async (queryParams: Record<string, unknown>) => {
-    const modelQuery = AdminModel.find().select('-admin_password').sort({ _id: 1 });
+// const getAllAdminsServices = async (queryParams: Record<string, unknown>) => {
+//     const modelQuery = AdminModel.find().select('-admin_password').sort({ _id: 1 });
 
-    const query = new QueryBuilder(modelQuery, queryParams)
-        .search(['admin_name', 'admin_phone']) // Provide searchable fields
-        // .filter()
-        .sort()
-        .paginate()
-    // .fields();
+//     const query = new QueryBuilder(modelQuery, queryParams)
+//         .search(['admin_name', 'admin_phone']) // Provide searchable fields
+//         // .filter()
+//         .sort()
+//         .paginate()
+//     // .fields();
 
-    const totalCount = await AdminModel.countDocuments(query.modelQuery.getFilter());
+//     const totalCount = await AdminModel.countDocuments(query.modelQuery.getFilter());
 
-    const result = await query.modelQuery; // Execute the query
+//     const result = await query.modelQuery; // Execute the query
 
-    return { result, totalCount };
-};
+//     return { result, totalCount };
+// };
 
 
 //get admin by _id (logged in admin info)
@@ -215,7 +215,7 @@ const changeAdminPasswordServices = async (
 export const AdminServices = {
     loginAdminServices,
     registerAdminServices,
-    getAllAdminsServices,
+    // getAllAdminsServices,
     getAdminByIdServices,
     updateAdminServices,
     deleteAdminServices,
