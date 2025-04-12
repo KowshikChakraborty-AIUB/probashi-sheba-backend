@@ -7,8 +7,9 @@ import httpStatus from 'http-status';
 // import QueryBuilder from '../../builder/QueryBuilder';
 import bcrypt from 'bcrypt';
 import { JwtPayload } from 'jsonwebtoken';
-import { createToken } from '../User/auth.utils';
+
 import config from '../../config';
+import { createToken } from '../../Utils/createToken';
 
 
 // login as admin

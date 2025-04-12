@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { authRoute } from '../modules/User/auth.route';
 import { AdminRegRoutes } from '../modules/Admin/admin.routes';
+import { UserRoutes } from '../modules/User/user.route';
 
 
 const router = Router();
@@ -8,16 +8,12 @@ const router = Router();
 const moduleRoutes = [
     {
         path: '/auth',
-        route: authRoute,
+        route: UserRoutes,
     },
     {
         path: '/admin',
         route: AdminRegRoutes,
     },
-    // {
-    //     path: '/users',
-    //     route: userRoute
-    // },
 ];
 
 moduleRoutes.forEach((route) => router.use(route.path, route.route));

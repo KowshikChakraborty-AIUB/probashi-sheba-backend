@@ -11,7 +11,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(cors());
 
-app.use('/api', router);
+app.use('/api/v1', router);
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Gardening Tips and Advise Platform')
@@ -20,6 +20,6 @@ app.get('/', (req: Request, res: Response) => {
 app.use(globalErrorhandler)
 
 //not found route
-app.use(notFound)
+// app.use(notFound)
 
 export default app;
