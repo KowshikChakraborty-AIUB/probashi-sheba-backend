@@ -1,7 +1,7 @@
 {
-  "name": "apollo-level2-web-dev-batch-3-assignment-6-server",
+  "name": "probashi-sheba-backend",
   "version": "1.0.0",
-  "description": "Programming Hero Level-2, Batch-3, Assignment-6, Server-side",
+  "description": "probashi-sheba-backend-server-side",
   "main": "./dist/server.js",
   "scripts": {
     "start:prod": "node ./dist/server.js",
