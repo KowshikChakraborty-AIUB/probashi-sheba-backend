@@ -14,7 +14,7 @@ app.use(cors());
 app.use('/api', router);
 
 app.get('/', (req: Request, res: Response) => {
-  res.send('Gardening Tips and Advise Platform')
+  res.send('Probashi Sheba Backend')
 })
 
 app.use(globalErrorhandler)
