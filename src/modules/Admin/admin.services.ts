@@ -7,7 +7,7 @@ import httpStatus from 'http-status';
 // import QueryBuilder from '../../builder/QueryBuilder';
 import bcrypt from 'bcrypt';
 import { JwtPayload } from 'jsonwebtoken';
-import { createToken } from '../Auth/auth.utils';
+import { createToken } from '../User/auth.utils';
 import config from '../../config';
 
 
