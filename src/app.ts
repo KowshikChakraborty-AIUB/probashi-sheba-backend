@@ -10,6 +10,8 @@ const app = express()
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors());
+//file retrieve
+app.use(express.static('uploads'));
 
 app.use('/api/v1', router);
 

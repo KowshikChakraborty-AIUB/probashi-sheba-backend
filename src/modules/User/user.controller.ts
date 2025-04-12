@@ -1,11 +1,19 @@
 import catchAsync from "../../Utils/catchAsync";
 import { UserServices } from "./user.service";
 import httpStatus from "http-status";
+import { customAlphabet } from 'nanoid'
 
 const registerUser = catchAsync(async (req, res) => {
-    console.log("Register User Controller", req.body);
-    
-    const user = await UserServices.registerUserServices(req.body);
+    const nanoid = customAlphabet('1234567890abcdef', 5)
+    const otp_code = nanoid()
+    const otp_expires_at = new Date(Date.now() + 10 * 60 * 1000); // OTP valid for 10 minutes
+    const userData = {
+        ...req.body,
+        otp_code,
+        otp_expires_at,
+    }
+
+    const user = await UserServices.registerUserServices(userData);
 
     res.status(httpStatus.CREATED).json({
         success: true,
@@ -14,6 +22,20 @@ const registerUser = catchAsync(async (req, res) => {
     });
 });
 
+// Verify OTP
+const verifyOtp = catchAsync(async (req, res) => {
+    console.log("Verify OTP Controller", req.body);
+
+    const user = await UserServices.verifyOtpServices(req.body);
+
+    res.status(httpStatus.OK).json({
+        success: true,
+        message: "OTP verified successfully",
+        data: user,
+    });
+});
+
 export const UserControllers = {
     registerUser,
+    verifyOtp,
 };  

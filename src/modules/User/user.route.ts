@@ -7,7 +7,10 @@ const router = express.Router();
 
 router.route('/')
     .post(FileUploadHelper.ImageUpload.fields([
-        { name: "admin_profile", maxCount: 1 },
-      ]),UserControllers.registerUser)
+        { name: "user_profile", maxCount: 1 },
+    ]), UserControllers.registerUser)
+
+router.route('/verify-otp')
+    .post(UserControllers.verifyOtp)
 
 export const UserRoutes = router;
