@@ -1,25 +1,12 @@
 import jwt from 'jsonwebtoken';
-import { Types } from "mongoose";
-
-type TTokenUserData = {
-    name: string;
-    email: string;
-    phone: string;
-    role: 'user' | 'admin';
-    address: string;
-    profileImg?: string;
-    verified?: boolean;
-    payment: boolean;
-    followers: Types.ObjectId[];
-    following: Types.ObjectId[];
-};
 
 export const createToken = (
-    jwtPayload: TTokenUserData,
+    jwtPayload: { admin_phone: string; admin_status: string },
     secret: string,
-    expiresIn: string,
+    expiresIn: string | number,
 ) => {
     return jwt.sign(jwtPayload, secret, {
-        expiresIn,
-    });
+        expiresIn: expiresIn as string | number,
+      });
+       
 };
