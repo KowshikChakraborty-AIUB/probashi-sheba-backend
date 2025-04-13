@@ -37,6 +37,7 @@ const BMETSchema = new Schema<IBMETRegistration>(
         passport_number: { type: String, required: true },
         passport_issue_date: { type: Date, required: true },
         passport_expire_date: { type: Date, required: true },
+        passport_verification_status: { type: String, required: true, enum: ["verified", "pending"], default: "pending", },
 
         nid: { type: String },
         birth_place: { type: String, required: true },
