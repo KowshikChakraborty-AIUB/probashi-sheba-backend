@@ -1,16 +1,15 @@
 import catchAsync from "../../Utils/catchAsync";
 import { UserServices } from "./user.service";
 import httpStatus from "http-status";
-import { customAlphabet } from 'nanoid'
 
-const sendOtp = catchAsync(async (req, res) => {
+const sendPhoneOtp = catchAsync(async (req, res) => {
     const { user_phone } = req.body;
 
-    const { user_phone: phone, user_phone_verified, otp_code, otp_expires_at } = await UserServices.sendOtpService(user_phone);
+    const { user_phone: phone, user_phone_is_verified, otp_code, otp_expires_at } = await UserServices.sendPhoneOtpService(user_phone);
 
     const userData = {
         user_phone: phone,
-        user_phone_verified,
+        user_phone_is_verified,
         otp_code,
         otp_expires_at
     }
@@ -65,5 +64,5 @@ export const UserControllers = {
     registerUser,
     verifyOtp,
     login,
-    sendOtp
+    sendPhoneOtp
 };  

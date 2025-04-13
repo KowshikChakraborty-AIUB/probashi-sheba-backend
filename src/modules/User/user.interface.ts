@@ -7,7 +7,8 @@ export interface IUserInterface {
     user_email?: string;
     user_phone: string;
     user_password?: string;
-    user_phone_verified: boolean; // ✅ indicates if OTP verification is complete
+    user_phone_is_verified: boolean; 
+    user_email_is_verified: boolean; 
     otp_code?: string; // ✅ temporary OTP (optional, if storing in DB)
     otp_expires_at?: Date; // ✅ optional expiry for OTP
     user_address?: string;
@@ -21,7 +22,7 @@ export interface IUserInterface {
     user_selected_countries: string[]; // ✅ array of selected countries
     user_selected_skills: string[]; // ✅ array of selected skills
     user_jobs: string[]; // ✅ array of selected jobs
-    user_is_experienced: boolean; 
+    user_is_experienced: boolean;
     user_current_job?: string; // ✅ optional, current job title or position
     user_current_job_country?: string; // ✅ optional, current job country
     user_is_have_passport?: boolean; // ✅ optional, indicates if the user has a passport
