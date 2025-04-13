@@ -5,8 +5,8 @@ import { FileUploadHelper } from '../../helpers/FileUploadHelper';
 
 const router = express.Router();
 
-router.post('/send-otp', UserControllers.sendOtp);
-router.route('/')
+router.post('/send-otp', UserControllers.sendPhoneOtp);
+router.route('/register')
     .post(FileUploadHelper.ImageUpload.fields([
         { name: "user_profile", maxCount: 1 },
     ]), UserControllers.registerUser)
