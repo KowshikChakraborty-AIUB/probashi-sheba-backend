@@ -22,7 +22,7 @@ export interface IUserDocument extends Document {
 
 const UserSchema: Schema = new Schema<IUserDocument>(
     {
-        user_name: { type: String, required: true },
+        user_name: { type: String},
         user_phone: { type: String, required: true, unique: true },
         user_phone_verified: { type: Boolean, default: false },
 

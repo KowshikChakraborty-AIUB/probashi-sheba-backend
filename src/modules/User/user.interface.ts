@@ -3,7 +3,7 @@ import { IAdminInterface } from "../Admin/admin.interface";
 
 export interface IUserInterface {
     _id?: any;
-    user_name: string;
+    user_name?: string;
     user_phone: string;
     user_phone_verified: boolean; // ✅ indicates if OTP verification is complete
     otp_code?: string; // ✅ temporary OTP (optional, if storing in DB)
