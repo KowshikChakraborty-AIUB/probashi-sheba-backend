@@ -1,3 +1,4 @@
+import QueryBuilder from "../../builder/QueryBuilder";
 import AppError from "../../Errors/AppError";
 import { INearestPassportOffice } from "./nearestPassportOffice.interface";
 import nearestPassportOfficeModel from "./nearestPassportOffice.model";
@@ -13,7 +14,14 @@ export const postNearestPassportOfficeService = async (payload: INearestPassport
     return result;
 };
 
-export const getNearestPassportOfficeService = async () => {
-    const result = await nearestPassportOfficeModel.find();
+export const getNearestPassportOfficeService = async (queryParams: Record<string, unknown>) => {
+    const modelQuery = nearestPassportOfficeModel.find();
+
+    const query = new QueryBuilder(modelQuery, queryParams)
+        .search(['nearest_passport_address']) // Provide searchable fields
+
+
+    const result = await query.modelQuery;
+
     return result;
 }

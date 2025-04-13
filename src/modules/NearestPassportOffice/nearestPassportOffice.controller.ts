@@ -16,7 +16,9 @@ export const postNearestPassportOffice = catchAsync(async (req, res) => {
 
 
 export const getNearestPassportOffice = catchAsync(async (req, res) => {
-    const result = await getNearestPassportOfficeService();
+    const query = req.query
+
+    const result = await getNearestPassportOfficeService(query);
 
     if (result.length === 0) {
         throw new AppError(404, "No data found");
