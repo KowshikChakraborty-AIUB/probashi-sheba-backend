@@ -1,8 +1,12 @@
-import { log } from "console";
+import httpStatus from "http-status";
 import { IUserInterface } from "./user.interface";
 import userModel from "./user.model";
 import { customAlphabet } from 'nanoid'
-import { hashPassword } from "../../helpers/hashHelper";
+import { comparePassword, hashPassword } from "../../helpers/hashHelper";
+import AppError from "../../Errors/AppError";
+import { createToken } from "../../Utils/createToken";
+import config from "../../config";
+import { Secret } from "jsonwebtoken";
 
 
 const sendOtpService = async (user_phone: string) => {
@@ -104,7 +108,48 @@ const verifyOtpServices = async (payload: IUserInterface) => {
 
 // Login user with phone number and OTP
 const loginServices = async (payload: IUserInterface) => {
+    const { user_phone, user_password } = payload;
+    if (!user_password) {
+        throw new AppError(httpStatus.BAD_REQUEST, 'Password is required');
+    }
 
+    const isExistUser = await userModel.findOne({ user_phone }).select('+user_password');
+    if (!isExistUser) {
+        throw new AppError(httpStatus.BAD_REQUEST, "User doesn't exist!");
+    }
+
+    //check verified and status
+  if (!isExistUser.user_phone_verified) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'Please verify your account, then try to login again'
+    );
+  }
+
+  //check user status
+  if (isExistUser.user_status === 'in-active') {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'You don’t have permission to access this content.It looks like your account is not active.'
+    );
+  }
+
+   //check match password
+   if (
+    user_password &&
+    !(await comparePassword(user_password, isExistUser.user_password))
+  ) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Password is incorrect!');
+  }
+
+  //create token
+  const accessToken = createToken(
+    { _id: isExistUser._id as string, user_phone: isExistUser.user_phone },
+    config.jwt_access_secret as string,
+    '7d'
+  );
+
+  return {accessToken, user: isExistUser};
 }
 
 export const UserServices = {

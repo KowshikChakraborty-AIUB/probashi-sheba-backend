@@ -50,14 +50,14 @@ const verifyOtp = catchAsync(async (req, res) => {
 
 // Login
 const login = catchAsync(async (req, res) => {
-    console.log("Login Controller", req.body);
-
-    const user = await UserServices.loginServices(req.body);
+    const { ...loginData } = req.body;
+    const { user, accessToken } = await UserServices.loginServices(loginData);
 
     res.status(httpStatus.OK).json({
         success: true,
         message: "User logged in successfully",
         data: user,
+        accessToken: accessToken,
     });
 });
 
