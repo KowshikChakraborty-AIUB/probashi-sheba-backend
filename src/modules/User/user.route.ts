@@ -5,14 +5,15 @@ import { FileUploadHelper } from '../../helpers/FileUploadHelper';
 
 const router = express.Router();
 
-router.post('/send-otp', UserControllers.sendPhoneOtp);
+router.post('/send-otp-phone', UserControllers.sendPhoneOtp);
+router.post('/send-otp-email', UserControllers.sendEmailOtp);
 router.route('/register')
     .post(FileUploadHelper.ImageUpload.fields([
         { name: "user_profile", maxCount: 1 },
     ]), UserControllers.registerUser)
 
-router.route('/verify-otp')
-    .post(UserControllers.verifyOtp)
+router.route('/verify-otp-phone')
+    .post(UserControllers.verifyPhoneOtp)
 
 router.route('/login')
     .post(UserControllers.login)

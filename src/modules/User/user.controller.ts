@@ -21,6 +21,27 @@ const sendPhoneOtp = catchAsync(async (req, res) => {
     });
 });
 
+const sendEmailOtp = catchAsync(async (req, res) => {
+    // const { user_email } = req.body;
+
+    // const { user_email: email, user_email_is_verified, otp_code, otp_expires_at } = await UserServices.sendEmailOtpService(user_email);
+
+    const user = await UserServices.sendEmailOtpService(req.body);
+
+    // const userData = {
+    //     user_email: email,
+    //     user_email_is_verified,
+    //     otp_code,
+    //     otp_expires_at
+    // }
+
+    res.status(httpStatus.OK).json({
+        success: true,
+        message: "OTP sent to email successfully",
+        data: user,
+    });
+});
+
 
 const registerUser = catchAsync(async (req, res) => {
 
@@ -35,10 +56,10 @@ const registerUser = catchAsync(async (req, res) => {
 });
 
 // Verify OTP
-const verifyOtp = catchAsync(async (req, res) => {
+const verifyPhoneOtp = catchAsync(async (req, res) => {
     console.log("Verify OTP Controller", req.body);
 
-    const user = await UserServices.verifyOtpServices(req.body);
+    const user = await UserServices.verifyPhoneOtpServices(req.body);
 
     res.status(httpStatus.OK).json({
         success: true,
@@ -62,7 +83,8 @@ const login = catchAsync(async (req, res) => {
 
 export const UserControllers = {
     registerUser,
-    verifyOtp,
+    verifyPhoneOtp,
     login,
-    sendPhoneOtp
+    sendPhoneOtp,
+    sendEmailOtp
 };  

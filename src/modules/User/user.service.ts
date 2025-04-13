@@ -8,7 +8,7 @@ import { createToken } from "../../Utils/createToken";
 import config from "../../config";
 import { Secret } from "jsonwebtoken";
 
-
+// Send phone otp
 const sendPhoneOtpService = async (user_phone: string) => {
   const existingUser = await userModel.findOne({ user_phone });
 
@@ -36,6 +36,11 @@ const sendPhoneOtpService = async (user_phone: string) => {
   });
 
   return user;
+}
+
+// Send email otp
+const sendEmailOtpService = async (user_email: string) => {
+
 }
 
 // create an Admin
@@ -88,7 +93,7 @@ const registerUserServices = async (payload: IUserInterface) => {
 };
 
 // Verify OTP
-const verifyOtpServices = async (payload: IUserInterface) => {
+const verifyPhoneOtpServices = async (payload: IUserInterface) => {
   const { user_phone, otp_code } = payload;
   const user = await userModel.findOne({ user_phone, otp_code });
 
@@ -154,7 +159,8 @@ const loginServices = async (payload: IUserInterface) => {
 
 export const UserServices = {
   registerUserServices,
-  verifyOtpServices,
+  verifyPhoneOtpServices,
   loginServices,
-  sendPhoneOtpService
+  sendPhoneOtpService,
+  sendEmailOtpService
 };  
