@@ -7,6 +7,7 @@ import AppError from "../../Errors/AppError";
 import { createToken } from "../../Utils/createToken";
 import config from "../../config";
 import { Secret } from "jsonwebtoken";
+import { emailTemplate } from "../../Utils/emailTemplate";
 
 // Send phone otp
 const sendPhoneOtpService = async (user_phone: string) => {
@@ -39,8 +40,33 @@ const sendPhoneOtpService = async (user_phone: string) => {
 }
 
 // Send email otp
-const sendEmailOtpService = async (user_email: string) => {
+const sendEmailOtpService = async (user_email: string, user_name: string) => {
+  if (!user_email) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Please provide email');
+  }
+console.log(user_email, "user_email");
 
+  const isEmail = await userModel.findOne({ user_email });
+
+  if (isEmail) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Email already registered');
+  }
+
+  // const existingUser = await userModel.findOne({ user_name });
+  // console.log(existingUser, "existingUser");
+  
+
+  //  // Generate OTP and prepare email
+   const emailOtp = customAlphabet('1234567890', 5)();
+   console.log(typeof emailOtp, "emailOtp");
+   
+   const otp_expires_at = new Date(Date.now() + 10 * 60 * 1000); // OTP valid for 10 minutes
+   const emailValues = {
+          name: user_name || 'User',
+          email: user_email,
+          otp: Number(emailOtp),
+        };
+   const accountEmailTemplate = emailTemplate.verifyEmail(emailValues);
 }
 
 // create an Admin

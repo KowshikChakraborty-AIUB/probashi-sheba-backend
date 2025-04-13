@@ -22,11 +22,11 @@ const sendPhoneOtp = catchAsync(async (req, res) => {
 });
 
 const sendEmailOtp = catchAsync(async (req, res) => {
-    // const { user_email } = req.body;
+    const { user_email, user_name } = req.body;
 
     // const { user_email: email, user_email_is_verified, otp_code, otp_expires_at } = await UserServices.sendEmailOtpService(user_email);
 
-    const user = await UserServices.sendEmailOtpService(req.body);
+    const user = await UserServices.sendEmailOtpService(user_email, user_name);
 
     // const userData = {
     //     user_email: email,
