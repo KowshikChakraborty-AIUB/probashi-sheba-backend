@@ -3,6 +3,26 @@ import { UserServices } from "./user.service";
 import httpStatus from "http-status";
 import { customAlphabet } from 'nanoid'
 
+const sendOtp = catchAsync(async (req, res) => {
+    const { user_phone } = req.body;
+
+    const {user_phone:phone, user_phone_verified, otp_code, otp_expires_at} = await UserServices.sendOtpService(user_phone);
+
+    const userData = {
+        user_phone: phone,
+        user_phone_verified,
+        otp_code,
+        otp_expires_at
+    }
+
+    res.status(httpStatus.OK).json({
+        success: true,
+        message: "OTP sent successfully",
+        data: userData,
+    });
+});
+
+
 const registerUser = catchAsync(async (req, res) => {
     const nanoid = customAlphabet('1234567890abcdef', 5)
     const otp_code = nanoid()
@@ -51,5 +71,6 @@ const login = catchAsync(async (req, res) => {
 export const UserControllers = {
     registerUser,
     verifyOtp,
-    login
+    login,
+    sendOtp
 };  

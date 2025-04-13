@@ -3,20 +3,20 @@ import { IAdminInterface } from "../Admin/admin.interface";
 
 export interface IUserInterface {
     _id?: any;
-    user_name: string;
-    user_email: string;
+    user_name?: string;
+    user_email?: string;
     user_phone: string;
-    user_password: string;
+    user_password?: string;
     user_phone_verified: boolean; // ✅ indicates if OTP verification is complete
     otp_code?: string; // ✅ temporary OTP (optional, if storing in DB)
     otp_expires_at?: Date; // ✅ optional expiry for OTP
     user_address?: string;
-    user_gender: string;
-    user_date_of_birth: string; // ✅ date of birth
-    user_educational_qualification: string; // ✅ educational qualification
-    user_country: string; // ✅ country of residence
-    user_city: string; // ✅ city of residence
-    user_why_interested: "government_service" | "job" | "training" | "other";
+    user_gender?: string;
+    user_date_of_birth?: string; // ✅ date of birth
+    user_educational_qualification?: string; // ✅ educational qualification
+    user_country?: string; // ✅ country of residence
+    user_city?: string; // ✅ city of residence
+    user_why_interested?: "government_service" | "job" | "training" | "other";
     user_why_interested_other?: string; // ✅ optional, if "other" is selected
     user_selected_countries: string[]; // ✅ array of selected countries
     user_selected_skills: string[]; // ✅ array of selected skills
