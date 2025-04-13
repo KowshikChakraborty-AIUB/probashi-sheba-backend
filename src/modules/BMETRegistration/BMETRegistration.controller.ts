@@ -1,11 +1,12 @@
 import { Request, Response, NextFunction, RequestHandler } from "express";
 import { IBMETRegistration } from "./BMETRegistration.interface";
 import AppError from "../../Errors/AppError";
-import { postBMETRegistrationService, updateBMETRegistrationService } from "./BMETRegistration.service";
+import { getBMETRegistrationService, postBMETRegistrationService, updateBMETRegistrationService } from "./BMETRegistration.service";
 import sendResponse from "../../Utils/sendResponse";
 import { FileUploadHelper } from "../../helpers/FileUploadHelper";
 import statusCodes from 'http-status';
 import BMETModel from "./BMETRegistration.model";
+import catchAsync from "../../Utils/catchAsync";
 
 export const postBMETRegistration: RequestHandler = async (
     req: Request,
@@ -74,6 +75,25 @@ export const postBMETRegistration: RequestHandler = async (
         next(error);
     }
 };
+
+export const getBMETRegistration = catchAsync(async (req, res) => {
+    const result = await getBMETRegistrationService();
+
+    //console.log(result);
+    //console.log(result.length);
+
+    if (result.length === 0) {
+        throw new AppError(404, "No data found");
+    }
+
+    sendResponse(res, {
+        success: true,
+        statusCode: 200,
+        message: 'BMET registration info retrieved successfully',
+        data: result,
+    });
+
+});
 
 export const updateBMETRegistration: RequestHandler = async (
     req: Request,

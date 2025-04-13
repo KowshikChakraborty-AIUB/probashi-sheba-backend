@@ -19,7 +19,14 @@ export const postBMETRegistrationService = async (
   return created;
 };
 
-// update BMET Registration
+
+//get BMET Registration info
+export const getBMETRegistrationService = async () => {
+  const result = await BMETModel.find();
+  return result;
+};
+
+// update BMET Registration info
 export const updateBMETRegistrationService = async (
   bmetId: string,
   payload: Partial<IBMETRegistration>
