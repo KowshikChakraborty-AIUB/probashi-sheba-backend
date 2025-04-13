@@ -2,6 +2,7 @@ import { log } from "console";
 import { IUserInterface } from "./user.interface";
 import userModel from "./user.model";
 import { customAlphabet } from 'nanoid'
+import { hashPassword } from "../../helpers/hashHelper";
 
 
 const sendOtpService = async (user_phone: string) => {
@@ -10,7 +11,7 @@ const sendOtpService = async (user_phone: string) => {
     // if (existingUser && existingUser.user_phone_verified) {
     //     throw new Error("Phone number already registered");
     // }
-    const nanoid = customAlphabet('1234567890abcdef', 5)
+    const nanoid = customAlphabet('1234567890', 5)
     const otp_code = nanoid()
     const otp_expires_at = new Date(Date.now() + 10 * 60 * 1000); // OTP valid for 10 minutes
 
@@ -37,12 +38,49 @@ const sendOtpService = async (user_phone: string) => {
 const registerUserServices = async (payload: IUserInterface) => {
     const existingUser = await userModel.findOne({ user_phone: payload.user_phone });
 
-    if (existingUser) {
-        throw new Error("Phone number already registered");
+    if (!existingUser || !existingUser.user_phone_verified) {
+        throw new Error("Phone number not verified");
+    }
+    // if (existingUser.user_phone_verified) {
+    //     throw new Error("Phone number already registered");
+    // }
+    if (existingUser.user_status === "active") {
+        throw new Error("User already registered and active");
+    }
+    if (existingUser.user_status === "in-active") {
+        existingUser.user_status = "active";
+        existingUser.user_name = payload.user_name;
+        existingUser.user_email = payload.user_email ?? existingUser.user_email;
+        existingUser.user_password = await hashPassword(payload.user_password ?? existingUser.user_password);
+        existingUser.user_phone_verified = true;
+        existingUser.user_gender = payload.user_gender ?? existingUser.user_gender;
+        existingUser.user_date_of_birth = payload.user_date_of_birth ?? existingUser.user_date_of_birth;
+        existingUser.user_educational_qualification = payload.user_educational_qualification ?? existingUser.user_educational_qualification;
+        existingUser.user_country = payload.user_country ?? existingUser.user_country;
+        existingUser.user_city = payload.user_city ?? existingUser.user_city;
+        existingUser.user_why_interested = payload.user_why_interested ?? existingUser.user_why_interested;
+        existingUser.user_why_interested_other = payload.user_why_interested_other;
+        existingUser.user_selected_countries = payload.user_selected_countries;
+        existingUser.user_selected_skills = payload.user_selected_skills;
+        existingUser.user_jobs = payload.user_jobs;
+        existingUser.user_is_experienced = payload.user_is_experienced;
+        existingUser.user_current_job = payload.user_current_job;
+        existingUser.user_current_job_country = payload.user_current_job_country;
+        existingUser.user_is_have_passport = payload.user_is_have_passport;
+        existingUser.user_passport_number = payload.user_passport_number;
+        existingUser.login_type = payload.login_type || "phone";
+        existingUser.social_id = payload.social_id;
+        existingUser.social_email = payload.social_email;
+        existingUser.user_publisher_id = payload.user_publisher_id;
+        existingUser.user_updated_by = payload.user_updated_by;
+
+        await existingUser.save();
+        return existingUser;
     }
 
-    const result = await userModel.create(payload);
-    return result;
+    // await existingUser.save();
+
+    // return existingUser;
 };
 
 // Verify OTP
