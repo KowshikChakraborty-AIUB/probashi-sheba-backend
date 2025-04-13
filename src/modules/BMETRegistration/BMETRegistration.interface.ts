@@ -34,6 +34,7 @@ export interface IBMETRegistration {
     passport_number: string;
     passport_issue_date: Date;
     passport_expire_date: Date;
+    passport_verification_status: "verified" | "pending";
     nid?: string;
     birth_place: string;
     birth_date: Date;
