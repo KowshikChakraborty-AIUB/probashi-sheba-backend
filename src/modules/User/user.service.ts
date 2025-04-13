@@ -151,6 +151,47 @@ const verifyPhoneOtpServices = async (payload: IUserInterface) => {
   return user;
 }
 
+const verifyEmailOtpServices = async (payload: IUserInterface) => {
+  const { user_email, otp_code } = payload;
+  const existingUser = await userModel.findOne({ user_email, otp_code });
+  if (!existingUser) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Invalid OTP or email address");
+  }
+
+  if (existingUser.otp_expires_at && existingUser.otp_expires_at < new Date()) {
+    throw new AppError(httpStatus.BAD_REQUEST, "OTP expired");
+  }
+
+  if (!otp_code) {
+    throw new AppError(httpStatus.BAD_REQUEST, "OTP is required");
+  }
+
+  console.log(typeof otp_code, "OTP Code");
+  console.log(typeof existingUser.otp_code, "Existing OTP Code");
+
+  if (existingUser.otp_code !== otp_code) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Invalid OTP");
+  }
+
+  let message;
+  let data;
+
+  if (!existingUser.user_email_is_verified) {
+    await userModel.findOneAndUpdate({ user_email }, { otp_code: undefined, otp_expires_at: undefined, user_email_is_verified: true }, { new: true });
+    message = "Your email has been successfully verified. Your account is now fully activated.";
+    data = null;
+  } else {
+    existingUser.user_email_is_verified = true;
+    existingUser.otp_code = undefined;
+    existingUser.otp_expires_at = undefined;
+    await existingUser.save();
+    message = "Your email has been successfully verified. Your account is now fully activated.";
+    data = existingUser;
+  }
+
+  return { message, data };
+}
+
 // Login user with phone number and OTP
 const loginServices = async (payload: IUserInterface) => {
   const { user_phone, user_password } = payload;
@@ -202,5 +243,6 @@ export const UserServices = {
   verifyPhoneOtpServices,
   loginServices,
   sendPhoneOtpService,
-  sendEmailOtpService
+  sendEmailOtpService,
+  verifyEmailOtpServices
 };  

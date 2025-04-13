@@ -12,8 +12,8 @@ router.route('/register')
         { name: "user_profile", maxCount: 1 },
     ]), UserControllers.registerUser)
 
-router.route('/verify-otp-phone')
-    .post(UserControllers.verifyPhoneOtp)
+router.post('/verify-otp-phone', UserControllers.verifyPhoneOtp)
+router.post('/verify-otp-email', UserControllers.verifyEmailOtp)
 
 router.route('/login')
     .post(UserControllers.login)
