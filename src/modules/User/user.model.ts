@@ -39,25 +39,24 @@ export interface IUserDocument extends Document {
 
 const UserSchema: Schema = new Schema<IUserDocument>(
     {
-        user_name: { type: String, required: true },
-        user_email: { type: String, required: true },
+        user_name: { type: String },
+        user_email: { type: String },
         user_phone: { type: String, required: true, unique: true },
-        user_password: { type: String, required: true, },
+        user_password: { type: String },
         user_phone_verified: { type: Boolean, default: false },
 
         otp_code: { type: String }, // optional, hash if stored
         otp_expires_at: { type: Date },
 
         user_address: { type: String },
-        user_gender: { type: String, required: true },
-        user_date_of_birth: { type: String, required: true }, // date of birth
-        user_educational_qualification: { type: String, required: true }, // educational qualification
-        user_country: { type: String, required: true }, // country of residence
-        user_city: { type: String, required: true }, // city of residence
+        user_gender: { type: String },
+        user_date_of_birth: { type: String }, // date of birth
+        user_educational_qualification: { type: String }, // educational qualification
+        user_country: { type: String }, // country of residence
+        user_city: { type: String }, // city of residence
         user_why_interested: {
             type: String,
             enum: ["government_service", "job", "training", "other"],
-            required: true,
         },
         user_why_interested_other: { type: String }, // optional, if "other" is selected
         user_selected_countries: [{ type: String }], // array of selected countries
@@ -83,7 +82,7 @@ const UserSchema: Schema = new Schema<IUserDocument>(
         },
         user_updated_by: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "admins", 
+            ref: "admins",
         },
 
         login_type: {
