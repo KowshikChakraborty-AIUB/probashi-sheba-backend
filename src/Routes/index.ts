@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { AdminRegRoutes } from '../modules/Admin/admin.routes';
 import { UserRoutes } from '../modules/User/user.route';
 import { BMETRegistrationRoutes } from '../modules/BMETRegistration/BMETRegistration.route';
+import { nearestPassportOfficeRoutes } from '../modules/NearestPassportOffice/nearestPassportOffice.route';
 
 
 const router = Router();
@@ -18,6 +19,10 @@ const moduleRoutes = [
     {
         path: '/bmet',
         route: BMETRegistrationRoutes,
+    },
+    {
+        path: '/nearestPassport',
+        route: nearestPassportOfficeRoutes,
     },
 ];
 
