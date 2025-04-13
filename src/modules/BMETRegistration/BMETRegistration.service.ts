@@ -5,16 +5,28 @@ import statusCodes from 'http-status';
 
 // Create BMET Registration
 export const postBMETRegistrationService = async (
-  data: IBMETRegistration
+  payload: IBMETRegistration
 ): Promise<IBMETRegistration> => {
 
-  const userData = await BMETModel.find({passport_number: data?.passport_number})
+  const userData = await BMETModel.find({passport_number: payload?.passport_number})
   
   if (userData.length) {
     throw new AppError(statusCodes.BAD_REQUEST, 'You already completed registration');
   }
 
 
-  const created = await BMETModel.create(data);
+  const created = await BMETModel.create(payload);
   return created;
+};
+
+// update BMET Registration
+export const updateBMETRegistrationService = async (
+  bmetId: string,
+  payload: Partial<IBMETRegistration>
+): Promise<any> => {
+  const result = await BMETModel.findByIdAndUpdate({ _id: bmetId }, payload, {
+    new: true, // returns the updated doc
+    runValidators: true,
+  });
+  return result;
 };

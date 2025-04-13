@@ -1,6 +1,6 @@
 import express from "express";
 import { FileUploadHelper } from "../../helpers/FileUploadHelper";
-import { postBMETRegistration } from "./BMETRegistration.controller";
+import { postBMETRegistration, updateBMETRegistration } from "./BMETRegistration.controller";
 
 const router = express.Router();
 
@@ -15,12 +15,13 @@ router
         ]),
         postBMETRegistration
     )
-//   .patch(
-//     FileUploadHelper.ImageUpload.fields([
-//       { name: "category_logo", maxCount: 1 },
-//     ]),
-//     updateCategory
-//   )
+    .patch(
+        FileUploadHelper.ImageUpload.fields([
+            { name: "passport_image", maxCount: 1 },
+            { name: "supporting_documents", maxCount: 10 }
+        ]),
+        updateBMETRegistration
+    )
 //   .delete(deleteACategoryInfo);
 
 export const BMETRegistrationRoutes = router;
