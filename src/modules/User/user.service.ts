@@ -6,9 +6,10 @@ import { comparePassword, hashPassword } from "../../helpers/hashHelper";
 import AppError from "../../Errors/AppError";
 import { createToken } from "../../Utils/createToken";
 import config from "../../config";
-import { Secret } from "jsonwebtoken";
+import { emailTemplate } from "../../Utils/emailTemplate";
+import { emailHelper } from "../../helpers/emailHelper";
 
-
+// Send phone otp
 const sendPhoneOtpService = async (user_phone: string) => {
   const existingUser = await userModel.findOne({ user_phone });
 
@@ -20,7 +21,7 @@ const sendPhoneOtpService = async (user_phone: string) => {
   const otp_expires_at = new Date(Date.now() + 10 * 60 * 1000); // OTP valid for 10 minutes
 
   if (existingUser) {
-    existingUser.otp_code = otp_code;
+    existingUser.otp_code = Number(otp_code);
     existingUser.otp_expires_at = otp_expires_at;
     await existingUser.save();
     return existingUser;
@@ -36,6 +37,50 @@ const sendPhoneOtpService = async (user_phone: string) => {
   });
 
   return user;
+}
+
+// Send email otp
+const sendEmailOtpService = async (user_email: string, user_name: string) => {
+  if (!user_email) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Please provide email');
+  }
+  console.log(user_email, "user_email");
+
+  const isEmail = await userModel.findOne({ user_email });
+
+  if (isEmail) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Email already registered');
+  }
+
+  //  // Generate OTP and prepare email
+  const emailOtp = customAlphabet('1234567890', 5)();
+
+  const emailValues = {
+    name: user_name || 'User',
+    email: user_email,
+    otp: Number(emailOtp),
+  };
+  const accountEmailTemplate = emailTemplate.verifyEmail(emailValues);
+  console.log("Email Template", accountEmailTemplate);
+
+  emailHelper.sendEmail(accountEmailTemplate);
+
+  // // Update user with authentication details
+  const authentication = {
+    otp_code: Number(emailOtp),
+    otp_expires_at: new Date(Date.now() + 10 * 60 * 1000) // OTP valid for 10 minutes,
+  };
+  console.log("Authentication", authentication);
+
+  const updatedAuthenticationUser = await userModel.findOneAndUpdate(
+    { user_name },
+    authentication,
+    { new: true, upsert: true } // Create if not exists 
+  )
+  console.log("Updated User", updatedAuthenticationUser);
+
+
+  return updatedAuthenticationUser
 }
 
 // create an Admin
@@ -88,7 +133,7 @@ const registerUserServices = async (payload: IUserInterface) => {
 };
 
 // Verify OTP
-const verifyOtpServices = async (payload: IUserInterface) => {
+const verifyPhoneOtpServices = async (payload: IUserInterface) => {
   const { user_phone, otp_code } = payload;
   const user = await userModel.findOne({ user_phone, otp_code });
 
@@ -154,7 +199,8 @@ const loginServices = async (payload: IUserInterface) => {
 
 export const UserServices = {
   registerUserServices,
-  verifyOtpServices,
+  verifyPhoneOtpServices,
   loginServices,
-  sendPhoneOtpService
+  sendPhoneOtpService,
+  sendEmailOtpService
 };  

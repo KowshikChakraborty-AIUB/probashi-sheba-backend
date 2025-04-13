@@ -9,7 +9,7 @@ export interface IUserInterface {
     user_password?: string;
     user_phone_is_verified: boolean; 
     user_email_is_verified: boolean; 
-    otp_code?: string; // ✅ temporary OTP (optional, if storing in DB)
+    otp_code?: number; // ✅ temporary OTP (optional, if storing in DB)
     otp_expires_at?: Date; // ✅ optional expiry for OTP
     user_address?: string;
     user_gender?: string;
