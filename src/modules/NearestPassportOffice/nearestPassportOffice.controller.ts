@@ -1,7 +1,7 @@
 import AppError from "../../Errors/AppError";
 import catchAsync from "../../Utils/catchAsync";
 import sendResponse from "../../Utils/sendResponse";
-import { getNearestPassportOfficeService, postNearestPassportOfficeService } from "./nearestPassportOffice.service";
+import { getNearestPassportOfficeService, postNearestPassportOfficeService, updateNearestPassportOfficeService } from "./nearestPassportOffice.service";
 
 export const postNearestPassportOffice = catchAsync(async (req, res) => {
     const result = await postNearestPassportOfficeService(req.body);
@@ -31,4 +31,16 @@ export const getNearestPassportOffice = catchAsync(async (req, res) => {
         data: result,
     });
 
+});
+
+export const updateNearestPassportOffice = catchAsync(async (req, res) => {
+    const _id = req.body._id;
+
+    const result = await updateNearestPassportOfficeService(_id, req.body);
+    sendResponse(res, {
+        success: true,
+        statusCode: 200,
+        message: 'Passport Office info updated successfully',
+        data: result,
+    });
 });

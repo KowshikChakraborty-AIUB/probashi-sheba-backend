@@ -1,5 +1,5 @@
 import express from "express";
-import { getNearestPassportOffice, postNearestPassportOffice } from "./nearestPassportOffice.controller";
+import { getNearestPassportOffice, postNearestPassportOffice, updateNearestPassportOffice } from "./nearestPassportOffice.controller";
 
 const router = express.Router();
 
@@ -8,7 +8,7 @@ router
     .route("/")
     .get(getNearestPassportOffice)
     .post(postNearestPassportOffice)
-    // .patch()
+    .patch(updateNearestPassportOffice)
 //   .delete(deleteACategoryInfo);
 
 export const nearestPassportOfficeRoutes = router;

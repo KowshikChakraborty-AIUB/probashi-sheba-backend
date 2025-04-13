@@ -25,3 +25,18 @@ export const getNearestPassportOfficeService = async (queryParams: Record<string
 
     return result;
 }
+
+
+export const updateNearestPassportOfficeService = async (_id: string, payload: Partial<INearestPassportOffice>) => {
+    const officeData = await nearestPassportOfficeModel.findById(_id);
+
+    if (!officeData) {
+        throw new AppError(statusCodes.NOT_FOUND, 'Passport office info does not exist!');
+    }
+
+    const result = await nearestPassportOfficeModel.findByIdAndUpdate(_id, payload, {
+        new: true,
+        runValidators: true,
+    });
+    return result;
+};
