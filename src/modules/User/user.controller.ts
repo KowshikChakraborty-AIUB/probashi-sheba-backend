@@ -1,4 +1,5 @@
 import catchAsync from "../../Utils/catchAsync";
+import sendResponse from "../../Utils/sendResponse";
 import { UserServices } from "./user.service";
 import httpStatus from "http-status";
 
@@ -91,11 +92,24 @@ const login = catchAsync(async (req, res) => {
     });
 });
 
+const socialLogin = catchAsync(async (req, res) => {
+    const { ...loginData } = req.body;
+    const result = await UserServices.socialLoginServices(loginData);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: 'User login successfully',
+        data: result,
+    });
+});
+
 export const UserControllers = {
-    registerUser,
-    verifyPhoneOtp,
-    login,
     sendPhoneOtp,
     sendEmailOtp,
+    verifyPhoneOtp,
     verifyEmailOtp,
+    registerUser,
+    login,
+    socialLogin,
 };  
