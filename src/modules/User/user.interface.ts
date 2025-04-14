@@ -5,7 +5,7 @@ export interface IUserInterface {
     _id?: Types.ObjectId;
     user_name?: string;
     user_email?: string;
-    user_phone: string;
+    user_phone?: string;
     user_password?: string;
     user_phone_is_verified: boolean;
     user_email_is_verified: boolean;

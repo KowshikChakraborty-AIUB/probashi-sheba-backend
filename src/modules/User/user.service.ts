@@ -1,5 +1,4 @@
 import httpStatus from "http-status";
-import { IUserInterface } from "./user.interface";
 import userModel from "./user.model";
 import { customAlphabet } from 'nanoid'
 import { comparePassword, hashPassword } from "../../helpers/hashHelper";
@@ -9,9 +8,21 @@ import config from "../../config";
 import { emailTemplate } from "../../Utils/emailTemplate";
 import { emailHelper } from "../../helpers/emailHelper";
 import { ILoginData } from "../../types/auth";
+import { Document, ObjectId, startSession } from "mongoose";
+
+// Ensure IUserInterface extends Document
+interface IUserInterface extends Document {
+  _id: ObjectId;
+  user_email: string;
+  user_name: string;
+  social_id: string;
+  login_type: string;
+  // Add other fields as necessary
+}
 
 // Send phone otp
 const sendPhoneOtpService = async (user_phone: string) => {
+  const { customAlphabet } = await import('nanoid');
   const existingUser = await userModel.findOne({ user_phone });
 
   // if (existingUser && existingUser.user_phone_is_verified) {
@@ -42,10 +53,10 @@ const sendPhoneOtpService = async (user_phone: string) => {
 
 // Send email otp
 const sendEmailOtpService = async (user_email: string, user_name: string) => {
+  const { customAlphabet } = await import('nanoid');
   if (!user_email) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Please provide email');
   }
-  console.log(user_email, "user_email");
 
   const isEmail = await userModel.findOne({ user_email });
 
@@ -241,9 +252,97 @@ const loginServices = async (payload: IUserInterface) => {
 }
 
 // Social login
-const socialLoginServices = async (payload: ILoginData) => {
-  console.log("Social Login Payload", payload);
+// const socialLoginServices = async (payload: ILoginData) => {
+//   const { user_email, login_type, social_id, user_name } = payload;
 
+//   if (login_type !== "phone" && !social_id) {
+//     throw new AppError(httpStatus.BAD_REQUEST, 'Social ID is required for social login');
+//   }
+//   if (login_type === "phone" && !user_email) {
+//     throw new AppError(httpStatus.BAD_REQUEST, 'Email is required for phone login');
+//   }
+
+//   if (login_type === 'google') {
+//     const session = await startSession()
+//     let user: IUserInterface | null = null
+
+//     try {
+//       session.startTransaction()
+
+//       // Check if user already exists
+//       user = await userModel.findOne({ user_email }).session(session)
+//       console.log("User", user);
+
+//       if (!user) {
+//         const [newUser] = await userModel.create([{
+//           user_name,
+//           user_email,
+//           login_type,
+//           social_id,
+//         }], { session })
+// console.log("New User", newUser);
+
+//         // if (!newUser) {
+//         //   throw new AppError(
+//         //     httpStatus.INTERNAL_SERVER_ERROR,
+//         //     'Failed to create user'
+//         //   );
+//         // }
+
+//         // user = newUser
+//       }
+
+//       // Commit transaction
+//       // await session.commitTransaction();
+
+//       // //create token
+//       // const accessToken = createToken(
+//       //   { _id: user._id, user_phone: user.user_phone },
+//       //   config.jwt_access_secret as string,
+//       //   '7d'
+//       // );
+
+//       // return { accessToken, user };
+//     } catch (error) {
+//       session.abortTransaction()
+//       throw new AppError(httpStatus.INTERNAL_SERVER_ERROR, 'Failed to create user')
+
+//     }
+//   }
+
+//   throw new AppError(httpStatus.BAD_REQUEST, 'Invalid login type');
+// }
+
+const socialLoginServices = async (payload: ILoginData) => {
+  const { user_email, login_type, social_id, user_name } = payload;
+
+  if (login_type !== "phone" && !social_id) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Social ID is required for social login');
+  }
+  if (login_type === "phone" && !user_email) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Email is required for phone login');
+  }
+
+  const existingUser = await userModel.findOne({ social_id, login_type });
+
+  if (!existingUser) {
+    const newUser = await userModel.create({
+      user_name,
+      user_email,
+      login_type,
+      social_id,
+    });
+    return newUser;
+  }
+
+  //create token
+  const accessToken = createToken(
+    { _id: existingUser._id as string, user_phone: existingUser.user_phone },
+    config.jwt_access_secret as string,
+    '7d'
+  );
+
+  return { accessToken, user: existingUser };
 }
 
 export const UserServices = {
