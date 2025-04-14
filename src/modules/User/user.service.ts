@@ -6,7 +6,6 @@ import { createToken } from "../../Utils/createToken";
 import config from "../../config";
 import { emailTemplate } from "../../Utils/emailTemplate";
 import { emailHelper } from "../../helpers/emailHelper";
-import { ILoginData } from "../../types/auth";
 import { IUserInterface } from "./user.interface";
 
 
@@ -311,7 +310,7 @@ const loginServices = async (payload: IUserInterface): Promise<{
         social_id,
         user_social_is_verified: true,
       });
-      return {newUser};
+      return { newUser };
     }
 
     //create token
@@ -389,36 +388,25 @@ const loginServices = async (payload: IUserInterface): Promise<{
 //   throw new AppError(httpStatus.BAD_REQUEST, 'Invalid login type');
 // }
 
-const socialLoginServices = async (payload: ILoginData) => {
-  const { user_email, login_type, social_id, user_name } = payload;
-
-  if (login_type !== "phone" && !social_id) {
-    throw new AppError(httpStatus.BAD_REQUEST, 'Social ID is required for social login');
-  }
-  if (login_type === "phone" && !user_email) {
-    throw new AppError(httpStatus.BAD_REQUEST, 'Email is required for phone login');
+const updateUserServices = async (_id: string, payload: Partial<IUserInterface>) => {
+  const userData = await userModel.findById(_id);
+  if (!userData) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User not found');
   }
 
-  const existingUser = await userModel.findOne({ social_id, login_type });
-
-  if (!existingUser) {
-    const newUser = await userModel.create({
-      user_name,
-      user_email,
-      login_type,
-      social_id,
-    });
-    return newUser;
+  // If the user wants to update the password, hash it
+  if (payload.user_password) {
+    payload.user_password = await hashPassword(
+      payload.user_password,
+    );
   }
 
-  //create token
-  const accessToken = createToken(
-    { _id: existingUser._id as string, user_phone: existingUser.user_phone },
-    config.jwt_access_secret as string,
-    '7d'
-  );
+  const result = await userModel.findByIdAndUpdate(_id, payload, {
+    new: true,
+    runValidators: true,
+  })
 
-  return { accessToken, user: existingUser };
+  return result;
 }
 
 export const UserServices = {
@@ -428,5 +416,5 @@ export const UserServices = {
   sendPhoneOtpService,
   sendEmailOtpService,
   verifyEmailOtpServices,
-  socialLoginServices
+  updateUserServices
 };  
