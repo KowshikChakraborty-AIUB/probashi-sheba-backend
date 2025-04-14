@@ -82,12 +82,12 @@ const verifyEmailOtp = catchAsync(async (req, res) => {
 // Login
 const login = catchAsync(async (req, res) => {
     const { ...loginData } = req.body;
-    const { user, accessToken } = await UserServices.loginServices(loginData);
+    const { user, accessToken, newUser } = await UserServices.loginServices(loginData);
 
     res.status(httpStatus.OK).json({
         success: true,
         message: "User logged in successfully",
-        data: user,
+        data: user || newUser,
         accessToken: accessToken,
     });
 });
