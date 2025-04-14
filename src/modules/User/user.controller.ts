@@ -55,16 +55,26 @@ const registerUser = catchAsync(async (req, res) => {
     });
 });
 
-// Verify OTP
+// Verify phone OTP
 const verifyPhoneOtp = catchAsync(async (req, res) => {
-    console.log("Verify OTP Controller", req.body);
-
     const user = await UserServices.verifyPhoneOtpServices(req.body);
 
     res.status(httpStatus.OK).json({
         success: true,
-        message: "OTP verified successfully",
+        message: "Phone OTP verified successfully",
         data: user,
+    });
+});
+
+// Verify email OTP
+const verifyEmailOtp = catchAsync(async (req, res) => {
+    const { ...verifyEmailData } = req.body;
+    const result = await UserServices.verifyEmailOtpServices(verifyEmailData);
+
+    res.status(httpStatus.OK).json({
+        success: true,
+        message: result.message,
+        data: result.data,
     });
 });
 
@@ -86,5 +96,6 @@ export const UserControllers = {
     verifyPhoneOtp,
     login,
     sendPhoneOtp,
-    sendEmailOtp
+    sendEmailOtp,
+    verifyEmailOtp,
 };  
