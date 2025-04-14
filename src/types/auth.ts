@@ -9,12 +9,11 @@ export type IVerifyEmail = {
 // };
 
 export type ILoginData = {
-    email: string;
-    password: string;
-    appId: string;
-    fcmToken: string;
-    role: string;
-    type: string;
+    user_email: string;
+    user_password: string;
+    social_id: string;
+    user_name: string;
+    login_type: string;
 };
 
 export type IAuthResetPassword = {

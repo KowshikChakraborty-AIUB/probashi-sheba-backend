@@ -42,7 +42,7 @@ const UserSchema: Schema = new Schema<IUserDocument>(
     {
         user_name: { type: String },
         user_email: { type: String },
-        user_phone: { type: String, required: true, unique: true },
+        user_phone: { type: String, unique: true },
         user_password: { type: String },
         user_phone_is_verified: { type: Boolean, default: false },
         user_email_is_verified: { type: Boolean, default: false },
