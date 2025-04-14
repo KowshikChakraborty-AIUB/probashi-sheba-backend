@@ -1,6 +1,5 @@
 import httpStatus from "http-status";
 import userModel from "./user.model";
-import { customAlphabet } from 'nanoid'
 import { comparePassword, hashPassword } from "../../helpers/hashHelper";
 import AppError from "../../Errors/AppError";
 import { createToken } from "../../Utils/createToken";
@@ -8,17 +7,9 @@ import config from "../../config";
 import { emailTemplate } from "../../Utils/emailTemplate";
 import { emailHelper } from "../../helpers/emailHelper";
 import { ILoginData } from "../../types/auth";
-import { Document, ObjectId, startSession } from "mongoose";
+import { IUserInterface } from "./user.interface";
 
-// Ensure IUserInterface extends Document
-interface IUserInterface extends Document {
-  _id: ObjectId;
-  user_email: string;
-  user_name: string;
-  social_id: string;
-  login_type: string;
-  // Add other fields as necessary
-}
+
 
 // Send phone otp
 const sendPhoneOtpService = async (user_phone: string) => {
@@ -129,7 +120,7 @@ const registerUserServices = async (payload: IUserInterface) => {
     existingUser.user_current_job_country = payload.user_current_job_country;
     existingUser.user_is_have_passport = payload.user_is_have_passport;
     existingUser.user_passport_number = payload.user_passport_number;
-    existingUser.login_type = payload.login_type || "phone";
+    // existingUser.login_type = payload.login_type || "phone";
     existingUser.social_id = payload.social_id;
     existingUser.social_email = payload.social_email;
     existingUser.user_publisher_id = payload.user_publisher_id;
@@ -207,48 +198,127 @@ const verifyEmailOtpServices = async (payload: IUserInterface) => {
 
 // Login user with phone number and OTP
 const loginServices = async (payload: IUserInterface) => {
-  const { user_phone, user_password } = payload;
-  if (!user_password) {
-    throw new AppError(httpStatus.BAD_REQUEST, 'Password is required');
-  }
+  const { user_phone, user_password, user_email, login_type, social_id } = payload;
 
-  const isExistUser = await userModel.findOne({ user_phone }).select('+user_password');
-  if (!isExistUser) {
-    throw new AppError(httpStatus.BAD_REQUEST, "User doesn't exist!");
-  }
+  // If login type is phone
+  if (login_type === "phone") {
+    if (!user_password) {
+      throw new AppError(httpStatus.BAD_REQUEST, 'Password is required');
+    }
 
-  //check verified and status
-  if (!isExistUser.user_phone_is_verified) {
-    throw new AppError(
-      httpStatus.BAD_REQUEST,
-      'Please verify your account, then try to login again'
+    const isExistUser = await userModel.findOne({ user_phone }).select('+user_password');
+    if (!isExistUser) {
+      throw new AppError(httpStatus.BAD_REQUEST, "User doesn't exist!");
+    }
+
+    //check verified and status
+    if (!isExistUser.user_phone_is_verified) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        'Please verify your account, then try to login again'
+      );
+    }
+
+    //check user status
+    if (isExistUser.user_status === 'in-active') {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        'You don’t have permission to access this content. It looks like your account is not active.'
+      );
+    }
+
+    //check match password
+    if (
+      user_password &&
+      !(await comparePassword(user_password, isExistUser.user_password))
+    ) {
+      throw new AppError(httpStatus.BAD_REQUEST, 'Password is incorrect!');
+    }
+
+    //create token
+    const accessToken = createToken(
+      { _id: isExistUser._id as string, user_phone: isExistUser.user_phone },
+      config.jwt_access_secret as string,
+      '7d'
     );
+
+    return { accessToken, user: isExistUser };
   }
 
-  //check user status
-  if (isExistUser.user_status === 'in-active') {
-    throw new AppError(
-      httpStatus.BAD_REQUEST,
-      'You don’t have permission to access this content. It looks like your account is not active.'
+  // If login type is email
+  if (login_type === "email") {
+    if (!user_password) {
+      throw new AppError(httpStatus.BAD_REQUEST, 'Password is required');
+    }
+
+    const isExistUser = await userModel.findOne({ user_email }).select('+user_password');
+    if (!isExistUser) {
+      throw new AppError(httpStatus.BAD_REQUEST, "User doesn't exist!");
+    }
+
+    //check verified and status
+    if (!isExistUser.user_email_is_verified) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        'Please verify your account, then try to login again'
+      );
+    }
+
+    //check user status
+    if (isExistUser.user_status === 'in-active') {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        'You don’t have permission to access this content. It looks like your account is not active.'
+      );
+    }
+
+    //check match password
+    if (
+      user_password &&
+      !(await comparePassword(user_password, isExistUser.user_password))
+    ) {
+      throw new AppError(httpStatus.BAD_REQUEST, 'Password is incorrect!');
+    }
+
+    //create token
+    const accessToken = createToken(
+      { _id: isExistUser._id as string, user_email: isExistUser.user_email },
+      config.jwt_access_secret as string,
+      '7d'
     );
+
+    return { accessToken, user: isExistUser };
   }
 
-  //check match password
-  if (
-    user_password &&
-    !(await comparePassword(user_password, isExistUser.user_password))
-  ) {
-    throw new AppError(httpStatus.BAD_REQUEST, 'Password is incorrect!');
+  // If login type is social
+
+  if (login_type === 'social') {
+    // if (login_type !== "phone" && !social_id) {
+    //   throw new AppError(httpStatus.BAD_REQUEST, 'Social ID is required for social login');
+    // }
+    // if (login_type === "email" && !user_email) {
+    //   throw new AppError(httpStatus.BAD_REQUEST, 'Email is required for phone login');
+    // }
+    const existingUser = await userModel.findOne({ user_phone, user_email });
+
+    if (!existingUser) {
+      const newUser = await userModel.create({
+        user_email,
+        social_id,
+        user_social_is_verified: true,
+      });
+      return newUser;
+    }
+
+    //create token
+    const accessToken = createToken(
+      { _id: existingUser._id as string, user_email: existingUser.user_email },
+      config.jwt_access_secret as string,
+      '7d'
+    );
+
+    return { accessToken, user: existingUser };
   }
-
-  //create token
-  const accessToken = createToken(
-    { _id: isExistUser._id as string, user_phone: isExistUser.user_phone },
-    config.jwt_access_secret as string,
-    '7d'
-  );
-
-  return { accessToken, user: isExistUser };
 }
 
 // Social login

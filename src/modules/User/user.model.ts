@@ -9,6 +9,7 @@ export interface IUserDocument extends Document {
     user_password: string;
     user_phone_is_verified: boolean;
     user_email_is_verified: boolean;
+    user_social_is_verified: boolean;
     otp_code?: number;
     otp_expires_at?: Date;
     user_address?: string;
@@ -46,6 +47,7 @@ const UserSchema: Schema = new Schema<IUserDocument>(
         user_password: { type: String },
         user_phone_is_verified: { type: Boolean, default: false },
         user_email_is_verified: { type: Boolean, default: false },
+        user_social_is_verified: { type: Boolean, default: false },
 
         otp_code: { type: Number }, // optional, hash if stored
         otp_expires_at: { type: Date },

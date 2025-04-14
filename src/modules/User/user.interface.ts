@@ -9,6 +9,7 @@ export interface IUserInterface {
     user_password?: string;
     user_phone_is_verified: boolean;
     user_email_is_verified: boolean;
+    user_social_is_verified: boolean;
     otp_code?: number;
     otp_expires_at?: Date;
     user_address?: string;
@@ -35,7 +36,7 @@ export interface IUserInterface {
     user_updated_by?: Types.ObjectId | IAdminInterface;
 
     // ✅ Social login support
-    // login_type?: "phone" | "email" | "social";
+    login_type?: "phone" | "email" | "social";
     social_id?: string; // ✅ the ID received from social platform
     social_email?: string; // ✅ optional, often provided by social login
 }
