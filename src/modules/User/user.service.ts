@@ -1,5 +1,5 @@
 import httpStatus from "http-status";
-import userModel from "./user.model";
+import userModel, { IUserDocument } from "./user.model";
 import { comparePassword, hashPassword } from "../../helpers/hashHelper";
 import AppError from "../../Errors/AppError";
 import { createToken } from "../../Utils/createToken";
@@ -197,7 +197,11 @@ const verifyEmailOtpServices = async (payload: IUserInterface) => {
 }
 
 // Login user with phone number and OTP
-const loginServices = async (payload: IUserInterface) => {
+const loginServices = async (payload: IUserInterface): Promise<{
+  accessToken?: string;
+  user?: IUserDocument;
+  newUser?: IUserDocument;
+}> => {
   const { user_phone, user_password, user_email, login_type, social_id } = payload;
 
   // If login type is phone
@@ -307,7 +311,7 @@ const loginServices = async (payload: IUserInterface) => {
         social_id,
         user_social_is_verified: true,
       });
-      return newUser;
+      return {newUser};
     }
 
     //create token
@@ -319,6 +323,8 @@ const loginServices = async (payload: IUserInterface) => {
 
     return { accessToken, user: existingUser };
   }
+
+  return {};
 }
 
 // Social login
