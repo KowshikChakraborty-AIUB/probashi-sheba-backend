@@ -33,7 +33,7 @@ export interface IUserDocument extends Document {
     user_publisher_id?: mongoose.Types.ObjectId | IAdminInterface;
     user_updated_by?: mongoose.Types.ObjectId | IAdminInterface;
 
-    login_type: "phone" | "google" | "facebook" | "apple";
+    // login_type: "phone" | "email" | "social";
     social_id?: string;
     social_email?: string;
 }
@@ -87,11 +87,11 @@ const UserSchema: Schema = new Schema<IUserDocument>(
             ref: "admins",
         },
 
-        login_type: {
-            type: String,
-            enum: ["phone", "google", "facebook", "apple"],
-            default: "phone",
-        },
+        // login_type: {
+        //     type: String,
+        //     enum: ["phone", "email", "social"],
+        //     default: "phone",
+        // },
         social_id: { type: String },
         social_email: { type: String },
     },

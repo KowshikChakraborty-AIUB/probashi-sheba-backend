@@ -35,7 +35,7 @@ export interface IUserInterface {
     user_updated_by?: Types.ObjectId | IAdminInterface;
 
     // ✅ Social login support
-    login_type: "phone" | "google" | "facebook" | "apple";
+    // login_type?: "phone" | "email" | "social";
     social_id?: string; // ✅ the ID received from social platform
     social_email?: string; // ✅ optional, often provided by social login
 }
