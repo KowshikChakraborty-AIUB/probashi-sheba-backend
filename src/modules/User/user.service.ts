@@ -8,6 +8,7 @@ import { createToken } from "../../Utils/createToken";
 import config from "../../config";
 import { emailTemplate } from "../../Utils/emailTemplate";
 import { emailHelper } from "../../helpers/emailHelper";
+import { ILoginData } from "../../types/auth";
 
 // Send phone otp
 const sendPhoneOtpService = async (user_phone: string) => {
@@ -83,7 +84,7 @@ const sendEmailOtpService = async (user_email: string, user_name: string) => {
   return updatedAuthenticationUser
 }
 
-// create an Admin
+// Register an user
 const registerUserServices = async (payload: IUserInterface) => {
   const existingUser = await userModel.findOne({ user_phone: payload.user_phone });
 
@@ -132,7 +133,7 @@ const registerUserServices = async (payload: IUserInterface) => {
   // return existingUser;
 };
 
-// Verify OTP
+// Verify phone OTP
 const verifyPhoneOtpServices = async (payload: IUserInterface) => {
   const { user_phone, otp_code } = payload;
   const user = await userModel.findOne({ user_phone, otp_code });
@@ -151,6 +152,7 @@ const verifyPhoneOtpServices = async (payload: IUserInterface) => {
   return user;
 }
 
+// Verify email OTP
 const verifyEmailOtpServices = async (payload: IUserInterface) => {
   const { user_email, otp_code } = payload;
   const existingUser = await userModel.findOne({ user_email, otp_code });
@@ -238,11 +240,18 @@ const loginServices = async (payload: IUserInterface) => {
   return { accessToken, user: isExistUser };
 }
 
+// Social login
+const socialLoginServices = async (payload: ILoginData) => {
+  console.log("Social Login Payload", payload);
+
+}
+
 export const UserServices = {
   registerUserServices,
   verifyPhoneOtpServices,
   loginServices,
   sendPhoneOtpService,
   sendEmailOtpService,
-  verifyEmailOtpServices
+  verifyEmailOtpServices,
+  socialLoginServices
 };  

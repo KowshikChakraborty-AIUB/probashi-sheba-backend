@@ -15,7 +15,7 @@ router.route('/register')
 router.post('/verify-otp-phone', UserControllers.verifyPhoneOtp)
 router.post('/verify-otp-email', UserControllers.verifyEmailOtp)
 
-router.route('/login')
-    .post(UserControllers.login)
+router.post('/login', UserControllers.login)
+router.post('/social-login', UserControllers.socialLogin)
 
 export const UserRoutes = router;
