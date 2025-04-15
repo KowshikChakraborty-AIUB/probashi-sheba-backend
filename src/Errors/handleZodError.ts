@@ -1,5 +1,5 @@
 import { ZodError, ZodIssue } from "zod";
-import { TErrorMessages, TGenericErrorResponse } from "../Interface/error";
+import { TErrorMessages, TGenericErrorResponse } from "../interface/error";
 import httpStatus from "http-status";
 
 
