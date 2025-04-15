@@ -1,6 +1,6 @@
-import AppError from "../../Errors/AppError";
-import catchAsync from "../../Utils/catchAsync";
-import sendResponse from "../../Utils/sendResponse";
+import AppError from "../../errors/AppError";
+import catchAsync from "../../utils/catchAsync";
+import sendResponse from "../../utils/sendResponse";
 import { getNearestPassportOfficeService, postNearestPassportOfficeService, updateNearestPassportOfficeService } from "./nearestPassportOffice.service";
 
 export const postNearestPassportOffice = catchAsync(async (req, res) => {

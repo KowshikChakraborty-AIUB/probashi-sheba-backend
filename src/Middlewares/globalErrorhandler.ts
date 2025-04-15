@@ -4,11 +4,11 @@
 
 import { ZodError } from "zod";
 import { TErrorMessages } from "../Interface/error";
-import handleZodError from "../Errors/handleZodError";
-import handleValidationError from "../Errors/handleValidationError";
-import handleCastError from "../Errors/handleCastError";
-import handleDuplicateError from "../Errors/handleDuplicateError";
-import AppError from "../Errors/AppError";
+import handleZodError from "../errors/handleZodError";
+import handleValidationError from "../errors/handleValidationError";
+import handleCastError from "../errors/handleCastError";
+import handleDuplicateError from "../errors/handleDuplicateError";
+import AppError from "../errors/AppError";
 import { NextFunction, Request, Response } from "express";
 
 

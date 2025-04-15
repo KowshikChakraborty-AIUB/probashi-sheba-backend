@@ -9,7 +9,7 @@ import * as fs from "fs";
 
 import path from "path";
 import { v4 as uuidv4 } from 'uuid';
-import AppError from "../Errors/AppError";
+import AppError from "../errors/AppError";
 
 // Set up AWS configuration
 const region = "ap-south-1";
