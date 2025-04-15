@@ -16,6 +16,9 @@ router.post('/verify-otp-phone', UserControllers.verifyPhoneOtp)
 router.post('/verify-otp-email', UserControllers.verifyEmailOtp)
 
 router.post('/login', UserControllers.login)
-router.post('/social-login', UserControllers.socialLogin)
+router.patch('/profile', FileUploadHelper.ImageUpload.fields([
+    { name: "user_profile", maxCount: 1 },
+]), UserControllers.updateUser)
+// router.post('/social-login', UserControllers.socialLogin)
 
 export const UserRoutes = router;

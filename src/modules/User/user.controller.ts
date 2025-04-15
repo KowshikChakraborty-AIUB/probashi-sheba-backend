@@ -1,3 +1,4 @@
+import { FileUploadHelper } from "../../helpers/FileUploadHelper";
 import catchAsync from "../../Utils/catchAsync";
 import sendResponse from "../../Utils/sendResponse";
 import { UserServices } from "./user.service";
@@ -92,14 +93,49 @@ const login = catchAsync(async (req, res) => {
     });
 });
 
-const socialLogin = catchAsync(async (req, res) => {
-    const { ...loginData } = req.body;
-    const result = await UserServices.socialLoginServices(loginData);
+// const socialLogin = catchAsync(async (req, res) => {
+//     const { ...loginData } = req.body;
+//     const result = await UserServices.socialLoginServices(loginData);
+
+//     sendResponse(res, {
+//         success: true,
+//         statusCode: httpStatus.OK,
+//         message: 'User login successfully',
+//         data: result,
+//     });
+// });
+
+const updateUser = catchAsync(async (req, res) => {
+    const user_id = req.body._id;
+console.log("Update User Controller", req.body, user_id);
+
+    // user profile image upload
+    let user_profile;
+    let user_profile_key;
+
+    if (req.files && 'user_profile' in req.files) {
+        const userImage = req.files['user_profile'][0];
+        const user_profile_upload = await FileUploadHelper.uploadToSpaces(userImage)
+
+        user_profile = user_profile_upload.Location;
+        user_profile_key = user_profile_upload.Key;
+    }
+
+    const userData = {
+        ...req.body,
+        user_profile,
+        user_profile_key,
+    };
+    const result = await UserServices.updateUserServices(user_id, userData);
+
+    if (req.body?.user_profile_key) {
+        await FileUploadHelper.deleteFromSpaces(req.body.user_profile_key)
+    }
 
     sendResponse(res, {
         success: true,
         statusCode: httpStatus.OK,
-        message: 'User login successfully',
+        message: 'User updated successfully',
         data: result,
     });
 });
@@ -111,5 +147,5 @@ export const UserControllers = {
     verifyEmailOtp,
     registerUser,
     login,
-    socialLogin,
+    updateUser
 };  

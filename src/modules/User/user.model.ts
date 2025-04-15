@@ -37,6 +37,8 @@ export interface IUserDocument extends Document {
     // login_type: "phone" | "email" | "social";
     social_id?: string;
     social_email?: string;
+
+    role: "user" | "admin";
 }
 
 const UserSchema: Schema = new Schema<IUserDocument>(
@@ -96,6 +98,12 @@ const UserSchema: Schema = new Schema<IUserDocument>(
         // },
         social_id: { type: String },
         social_email: { type: String },
+
+        role: {
+            type: String,
+            enum: ["user", "admin"],
+            default: "user"
+        },
     },
     {
         timestamps: true,
