@@ -1,10 +1,10 @@
 import httpStatus from "http-status";
 import userModel, { IUserDocument } from "./user.model";
 import { comparePassword, hashPassword } from "../../helpers/hashHelper";
-import AppError from "../../Errors/AppError";
-import { createToken } from "../../Utils/createToken";
+import AppError from "../../errors/AppError";
+import { createToken } from "../../utils/createToken";
 import config from "../../config";
-import { emailTemplate } from "../../Utils/emailTemplate";
+import { emailTemplate } from "../../utils/emailTemplate";
 import { emailHelper } from "../../helpers/emailHelper";
 import { IUserInterface } from "./user.interface";
 import { customAlphabet } from 'nanoid';

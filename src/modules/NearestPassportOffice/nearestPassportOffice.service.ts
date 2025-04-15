@@ -1,5 +1,5 @@
 import QueryBuilder from "../../builder/QueryBuilder";
-import AppError from "../../Errors/AppError";
+import AppError from "../../errors/AppError";
 import { INearestPassportOffice } from "./nearestPassportOffice.interface";
 import nearestPassportOfficeModel from "./nearestPassportOffice.model";
 import statusCodes from 'http-status';

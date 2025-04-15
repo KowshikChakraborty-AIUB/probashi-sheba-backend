@@ -1,9 +1,9 @@
 import httpStatus from 'http-status';
-import catchAsync from "../../Utils/catchAsync";
+import catchAsync from "../../utils/catchAsync";
 import { IAdminInterface } from "./admin.interface";
 import AdminModel from "./admin.model";
 import { AdminServices } from "./admin.services";
-import sendResponse from '../../Utils/sendResponse';
+import sendResponse from '../../utils/sendResponse';
 
 
 // login an admin
@@ -79,10 +79,10 @@ const getAdminById = catchAsync(async (req, res) => {
 
   const result = await AdminServices.getAdminByIdServices(_id);
   sendResponse(res, {
-      statusCode: 200,
-      success: true,
-      message: 'Logged-In admin retrieved successfully',
-      data: result,
+    statusCode: 200,
+    success: true,
+    message: 'Logged-In admin retrieved successfully',
+    data: result,
   });
 
 });
@@ -158,9 +158,9 @@ const changeAdminPassword = catchAsync(async (req, res) => {
 export const AdminControllers = {
   loginAdmin,
   registerAdmin,
-//   getAllAdmins,
+  //   getAllAdmins,
   getAdminById,
-//   updateAdmin,
+  //   updateAdmin,
   deleteAdmin,
   changeAdminPassword
 };

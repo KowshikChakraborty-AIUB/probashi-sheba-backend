@@ -1,6 +1,6 @@
 import { FileUploadHelper } from "../../helpers/FileUploadHelper";
-import catchAsync from "../../Utils/catchAsync";
-import sendResponse from "../../Utils/sendResponse";
+import catchAsync from "../../utils/catchAsync";
+import sendResponse from "../../utils/sendResponse";
 import { UserServices } from "./user.service";
 import httpStatus from "http-status";
 
@@ -107,7 +107,7 @@ const login = catchAsync(async (req, res) => {
 
 const updateUser = catchAsync(async (req, res) => {
     const user_id = req.body._id;
-console.log("Update User Controller", req.body, user_id);
+    console.log("Update User Controller", req.body, user_id);
 
     // user profile image upload
     let user_profile;
