@@ -1,7 +1,6 @@
-import AppError from "../../Errors/AppError";
-import { FileUploadHelper } from "../../helpers/FileUploadHelper";
-import catchAsync from "../../Utils/catchAsync";
-import sendResponse from "../../Utils/sendResponse";
+import AppError from "../../errors/AppError";
+import catchAsync from "../../utils/catchAsync";
+import sendResponse from "../../utils/sendResponse";
 import { deleteNearestPassportOfficeService, getNearestPassportOfficeService, postNearestPassportOfficeService, updateNearestPassportOfficeService } from "./nearestPassportOffice.service";
 
 export const postNearestPassportOffice = catchAsync(async (req, res) => {

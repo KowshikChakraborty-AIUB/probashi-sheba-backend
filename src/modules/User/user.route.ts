@@ -12,10 +12,13 @@ router.route('/register')
         { name: "user_profile", maxCount: 1 },
     ]), UserControllers.registerUser)
 
-router.route('/verify-otp-phone')
-    .post(UserControllers.verifyPhoneOtp)
+router.post('/verify-otp-phone', UserControllers.verifyPhoneOtp)
+router.post('/verify-otp-email', UserControllers.verifyEmailOtp)
 
-router.route('/login')
-    .post(UserControllers.login)
+router.post('/login', UserControllers.login)
+router.patch('/profile', FileUploadHelper.ImageUpload.fields([
+    { name: "user_profile", maxCount: 1 },
+]), UserControllers.updateUser)
+// router.post('/social-login', UserControllers.socialLogin)
 
 export const UserRoutes = router;

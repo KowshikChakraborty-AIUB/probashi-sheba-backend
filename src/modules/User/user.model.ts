@@ -9,6 +9,7 @@ export interface IUserDocument extends Document {
     user_password: string;
     user_phone_is_verified: boolean;
     user_email_is_verified: boolean;
+    user_social_is_verified: boolean;
     otp_code?: number;
     otp_expires_at?: Date;
     user_address?: string;
@@ -33,19 +34,22 @@ export interface IUserDocument extends Document {
     user_publisher_id?: mongoose.Types.ObjectId | IAdminInterface;
     user_updated_by?: mongoose.Types.ObjectId | IAdminInterface;
 
-    login_type: "phone" | "google" | "facebook" | "apple";
+    // login_type: "phone" | "email" | "social";
     social_id?: string;
     social_email?: string;
+
+    role: "user" | "admin";
 }
 
 const UserSchema: Schema = new Schema<IUserDocument>(
     {
         user_name: { type: String },
         user_email: { type: String },
-        user_phone: { type: String, required: true, unique: true },
+        user_phone: { type: String, unique: true },
         user_password: { type: String },
         user_phone_is_verified: { type: Boolean, default: false },
         user_email_is_verified: { type: Boolean, default: false },
+        user_social_is_verified: { type: Boolean, default: false },
 
         otp_code: { type: Number }, // optional, hash if stored
         otp_expires_at: { type: Date },
@@ -87,13 +91,19 @@ const UserSchema: Schema = new Schema<IUserDocument>(
             ref: "admins",
         },
 
-        login_type: {
-            type: String,
-            enum: ["phone", "google", "facebook", "apple"],
-            default: "phone",
-        },
+        // login_type: {
+        //     type: String,
+        //     enum: ["phone", "email", "social"],
+        //     default: "phone",
+        // },
         social_id: { type: String },
         social_email: { type: String },
+
+        role: {
+            type: String,
+            enum: ["user", "admin"],
+            default: "user"
+        },
     },
     {
         timestamps: true,

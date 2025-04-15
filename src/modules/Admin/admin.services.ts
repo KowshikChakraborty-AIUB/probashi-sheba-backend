@@ -1,4 +1,4 @@
-import AppError from '../../Errors/AppError';
+import AppError from '../../errors/AppError';
 import { IAdminInterface, IAdminLoginInterface } from './admin.interface';
 import AdminModel from './admin.model';
 import httpStatus from 'http-status';
@@ -9,7 +9,7 @@ import bcrypt from 'bcrypt';
 import { JwtPayload } from 'jsonwebtoken';
 
 import config from '../../config';
-import { createToken } from '../../Utils/createToken';
+import { createToken } from '../../utils/createToken';
 
 
 // login as admin
