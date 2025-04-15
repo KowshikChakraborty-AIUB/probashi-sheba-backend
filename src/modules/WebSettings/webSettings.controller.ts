@@ -91,7 +91,6 @@ const updateSettings = catchAsync(async (req, res) => {
 
     // Ensure we are working with a single settings object
     const existingSettings = existingSettingsArray?.[0];
-    console.log(existingSettings, 'exisingsettings in settings controller');
 
     // Default values if settings don't exist
     let logo = existingSettings?.logo || "";
@@ -135,9 +134,11 @@ const updateSettings = catchAsync(async (req, res) => {
             }
         }
 
-        const { who_we_are, testimonials, ...rest } = req.body;
+        const { who_we_are, testimonials, for_migrant_workers, ...rest } = req.body;
+
         const parsedWhoWeAre = JSON.parse(who_we_are);
         const parsedTestimonials = JSON.parse(testimonials);
+        const parsedForMigrantWorkers = JSON.parse(for_migrant_workers);
         const parsedData = {
             ...rest,
             who_we_are: {
@@ -145,7 +146,12 @@ const updateSettings = catchAsync(async (req, res) => {
                 ...parsedWhoWeAre,
             },
             testimonials: parsedTestimonials,
+            // for_migrant_workers: {
+            //     ...existingSettings?.for_migrant_workers,
+            //     ...parsedForMigrantWorkers,
+            // },
         };
+        console.log(parsedForMigrantWorkers, 'parsedForMigrantWorkers in settings controller');
 
 
         // Prepare updated data
@@ -154,13 +160,13 @@ const updateSettings = catchAsync(async (req, res) => {
             ...parsedData,
             who_we_are: parsedWhoWeAre,
             testimonials: parsedTestimonials,
+            for_migrant_workers: parsedForMigrantWorkers,
             logo,
             logo_key,
             favicon,
             favicon_key,
         };
 
-        console.log("Updating settings in database:", updatedSettingsData);
         const result = await WebSettingsService.updateSettingsServices(updatedSettingsData);
 
         sendResponse(res, {
