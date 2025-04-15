@@ -39,4 +39,6 @@ export interface IUserInterface {
     login_type?: "phone" | "email" | "social";
     social_id?: string; // ✅ the ID received from social platform
     social_email?: string; // ✅ optional, often provided by social login
+
+    role?: "user" | "admin";
 }

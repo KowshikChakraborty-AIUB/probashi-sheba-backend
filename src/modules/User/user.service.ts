@@ -7,12 +7,11 @@ import config from "../../config";
 import { emailTemplate } from "../../Utils/emailTemplate";
 import { emailHelper } from "../../helpers/emailHelper";
 import { IUserInterface } from "./user.interface";
-
+import { customAlphabet } from 'nanoid';
 
 
 // Send phone otp
 const sendPhoneOtpService = async (user_phone: string) => {
-  const { customAlphabet } = await import('nanoid');
   const existingUser = await userModel.findOne({ user_phone });
 
   // if (existingUser && existingUser.user_phone_is_verified) {
@@ -36,6 +35,7 @@ const sendPhoneOtpService = async (user_phone: string) => {
     user_status: 'in-active',
     login_type: 'phone',
     user_phone_is_verified: false,
+    role: 'user',
   });
 
   return user;
@@ -43,7 +43,7 @@ const sendPhoneOtpService = async (user_phone: string) => {
 
 // Send email otp
 const sendEmailOtpService = async (user_email: string, user_name: string) => {
-  const { customAlphabet } = await import('nanoid');
+
   if (!user_email) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Please provide email');
   }
@@ -63,24 +63,20 @@ const sendEmailOtpService = async (user_email: string, user_name: string) => {
     otp: Number(emailOtp),
   };
   const accountEmailTemplate = emailTemplate.verifyEmail(emailValues);
-  console.log("Email Template", accountEmailTemplate);
-
   emailHelper.sendEmail(accountEmailTemplate);
 
   // // Update user with authentication details
   const authentication = {
     otp_code: Number(emailOtp),
-    otp_expires_at: new Date(Date.now() + 10 * 60 * 1000) // OTP valid for 10 minutes,
+    otp_expires_at: new Date(Date.now() + 10 * 60 * 1000), // OTP valid for 10 minutes,
+    role: 'user',
   };
-  console.log("Authentication", authentication);
 
   const updatedAuthenticationUser = await userModel.findOneAndUpdate(
     { user_name },
     authentication,
     { new: true, upsert: true } // Create if not exists 
   )
-  console.log("Updated User", updatedAuthenticationUser);
-
 
   return updatedAuthenticationUser
 }
@@ -124,6 +120,7 @@ const registerUserServices = async (payload: IUserInterface) => {
     existingUser.social_email = payload.social_email;
     existingUser.user_publisher_id = payload.user_publisher_id;
     existingUser.user_updated_by = payload.user_updated_by;
+    existingUser.role = payload.role || 'user';
 
     await existingUser.save();
     return existingUser;
@@ -302,7 +299,22 @@ const loginServices = async (payload: IUserInterface): Promise<{
     // if (login_type === "email" && !user_email) {
     //   throw new AppError(httpStatus.BAD_REQUEST, 'Email is required for phone login');
     // }
-    const existingUser = await userModel.findOne({ user_phone, user_email });
+    let existingUser = null;
+
+    // 1. Try to find by social_id (preferred)
+    if (social_id) {
+      existingUser = await userModel.findOne({ social_id });
+    }
+
+    // 2. If not found, try to find by user_phone
+    if (!existingUser && user_phone) {
+      existingUser = await userModel.findOne({ user_phone });
+    }
+
+    // 3. If not found, try to find by user_email
+    if (!existingUser && user_email) {
+      existingUser = await userModel.findOne({ user_email });
+    }
 
     if (!existingUser) {
       const newUser = await userModel.create({
@@ -311,6 +323,13 @@ const loginServices = async (payload: IUserInterface): Promise<{
         user_social_is_verified: true,
       });
       return { newUser };
+    }
+
+    // 4. Link social_id if it was missing before
+    if (!existingUser.social_id && social_id) {
+      existingUser.social_id = social_id;
+      existingUser.user_social_is_verified = true;
+      await existingUser.save();
     }
 
     //create token
