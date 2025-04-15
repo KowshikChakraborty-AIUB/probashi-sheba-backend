@@ -3,7 +3,7 @@
 /* eslint-disable no-unused-vars */
 
 import { ZodError } from "zod";
-import { TErrorMessages } from "../Interface/error";
+import { TErrorMessages } from "../interface/error";
 import handleZodError from "../errors/handleZodError";
 import handleValidationError from "../errors/handleValidationError";
 import handleCastError from "../errors/handleCastError";

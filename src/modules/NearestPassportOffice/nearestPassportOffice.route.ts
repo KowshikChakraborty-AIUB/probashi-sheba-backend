@@ -3,7 +3,7 @@ import { deleteNearestPassportOffice, getNearestPassportOffice, postNearestPassp
 
 const router = express.Router();
 
-// Create, Update, Get Nearest Passport Office Info
+// Create, Get, Update, Delete Nearest Passport Office Info
 router
     .route("/")
     .get(getNearestPassportOffice)
