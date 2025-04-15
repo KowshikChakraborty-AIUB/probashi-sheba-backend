@@ -3,6 +3,7 @@ import { AdminRegRoutes } from '../modules/Admin/admin.routes';
 import { UserRoutes } from '../modules/User/user.route';
 import { BMETRegistrationRoutes } from '../modules/BMETRegistration/BMETRegistration.route';
 import { nearestPassportOfficeRoutes } from '../modules/NearestPassportOffice/nearestPassportOffice.route';
+import { WebSettingsRoutes } from '../modules/WebSettings/webSettings.route';
 
 
 const router = Router();
@@ -23,6 +24,10 @@ const moduleRoutes = [
     {
         path: '/nearestPassport',
         route: nearestPassportOfficeRoutes,
+    },
+    {
+        path: '/web-settings',
+        route: WebSettingsRoutes,
     },
 ];
 
