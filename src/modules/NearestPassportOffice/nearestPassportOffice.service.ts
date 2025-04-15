@@ -40,3 +40,23 @@ export const updateNearestPassportOfficeService = async (_id: string, payload: P
     });
     return result;
 };
+
+
+// delete A Nearest Passport Office
+
+export const deleteNearestPassportOfficeService = async (
+    _id: string
+): Promise<INearestPassportOffice | any> => {
+    const nearestPassportOfficeInfo: INearestPassportOffice | null =
+        await nearestPassportOfficeModel.findOne({ _id: _id });
+    if (!nearestPassportOfficeInfo) {
+        throw new AppError(404, "Info not found");
+    }
+    const result = await nearestPassportOfficeModel.deleteOne(
+        { _id: _id },
+        {
+            runValidators: true,
+        }
+    );
+    return result;
+};
