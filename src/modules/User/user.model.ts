@@ -28,6 +28,7 @@ export interface IUserDocument extends Document {
     user_current_job_country?: string; // ✅ optional, current job country
     user_is_have_passport?: boolean; // ✅ optional, indicates if the user has a passport
     user_passport_number?: string; // ✅ optional, passport number
+    device_id?: string; // ✅ optional, for tracking user devices
     user_profile?: string;
     user_profile_key?: string;
     user_status: "active" | "in-active";
@@ -73,6 +74,7 @@ const UserSchema: Schema = new Schema<IUserDocument>(
         user_current_job_country: { type: String }, // optional, current job country
         user_is_have_passport: { type: Boolean, default: false }, // optional, indicates if the user has a passport
         user_passport_number: { type: String }, // optional, passport number
+        device_id: { type: String }, // optional, for tracking user devices
 
         user_profile: { type: String },
         user_profile_key: { type: String },

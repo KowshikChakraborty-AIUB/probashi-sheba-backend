@@ -28,6 +28,7 @@ export interface IUserInterface {
     user_current_job_country?: string;
     user_is_have_passport?: boolean;
     user_passport_number?: string;
+    device_id?: string; // ✅ optional, for tracking user devices
 
     user_profile?: string;
     user_profile_key?: string;
