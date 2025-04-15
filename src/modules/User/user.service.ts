@@ -198,7 +198,7 @@ const loginServices = async (payload: IUserInterface): Promise<{
   user?: IUserDocument;
   newUser?: IUserDocument;
 }> => {
-  const { user_phone, user_password, user_email, login_type, social_id } = payload;
+  const { user_phone, user_password, user_email, login_type, social_id, device_id } = payload;
 
   // If login type is phone
   if (login_type === "phone") {
