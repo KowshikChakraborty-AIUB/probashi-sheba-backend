@@ -37,30 +37,6 @@ const TestimonialSchema = new mongoose.Schema(
     { _id: false }
 );
 
-const ForMigrantWorkersTabContentsSchema = new mongoose.Schema(
-    {
-        for_migrant_workers_tab_contents_title: { type: String },
-        for_migrant_workers_tab_contents_description: { type: String },
-        for_migrant_workers_tab_contents_link: { type: String },
-        for_migrant_workers_tab_contents_link_text: { type: String },
-    },
-    { _id: false }
-);
-
-const ForMigrantWorkersSchema = new mongoose.Schema(
-    {
-        for_migrant_workers_tab_name: { type: String },
-        for_migrant_workers_tab_image: { type: String },
-        for_migrant_workers_tab_image_key: { type: String },
-        for_migrant_workers_tab_icon: { type: String },
-        for_migrant_workers_tab_icon_key: { type: String },
-        for_migrant_workers_tab_status: { type: String, default: 'active' },
-        for_migrant_workers_tab_serial: { type: String },
-        for_migrant_workers_tab_contents: [ForMigrantWorkersTabContentsSchema],
-    },
-    { _id: false }
-);
-
 const WebSettingsSchema = new mongoose.Schema<IWebSettings>(
     {
         title: { type: String },
@@ -82,7 +58,10 @@ const WebSettingsSchema = new mongoose.Schema<IWebSettings>(
         terms: { type: String },
         who_we_are: WhoWeAreSchema,
         testimonials: [TestimonialSchema],
-        for_migrant_workers: [ForMigrantWorkersSchema],
+        for_migrant_workers_refs: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'forMigrantWorkers',
+        }],
     },
     {
         timestamps: true,

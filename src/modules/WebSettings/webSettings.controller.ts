@@ -184,7 +184,7 @@ const updateSettings = catchAsync(async (req, res) => {
             favicon,
             favicon_key,
             ...req.body,
-            for_migrant_workers: for_migrant_workers.length > 0 ? for_migrant_workers : existingSettings?.for_migrant_workers || [],
+            // for_migrant_workers: for_migrant_workers.length > 0 ? for_migrant_workers : existingSettings?.for_migrant_workers || [],
         };
 
         const result = await WebSettingsService.updateSettingsServices(updatedSettingsData);
