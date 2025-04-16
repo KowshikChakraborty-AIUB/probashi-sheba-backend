@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import AppError from "../../errors/AppError";
-import { ForMigrantWorkerModel, IForMigrantWorker } from "../ForMigrantWorker/ForMigrantWorker.model";
+import { ForMigrantWorkerModel } from "../ForMigrantWorker/ForMigrantWorker.model";
 import { IWebSettings } from "./webSettings.interface";
 import { WebSettingsModel } from "./webSettings.model";
 import httpStatus from "http-status";
@@ -34,30 +34,6 @@ const updateSettingsServices = async (payload: Partial<IWebSettings>) => {
     }
 
     return updatedSettings;
-};
-
-
-export const createMigrantWorkerServices = async (workerData: IForMigrantWorker) => {
-    const session = await mongoose.startSession();
-    session.startTransaction();
-
-    try {
-        const worker = await ForMigrantWorkerModel.create([workerData], { session });
-
-        await WebSettingsModel.findByIdAndUpdate(
-            {},
-            { $push: { for_migrant_worker_refs: worker[0]._id } },
-            { session }
-        );
-
-        await session.commitTransaction();
-        return worker[0];
-    } catch (err) {
-        await session.abortTransaction();
-        throw err;
-    } finally {
-        session.endSession();
-    }
 };
 
 

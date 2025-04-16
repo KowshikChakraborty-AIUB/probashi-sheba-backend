@@ -127,54 +127,54 @@ const updateSettings = catchAsync(async (req, res) => {
         }
 
         // Handle for_migrant_workers files
-        let for_migrant_workers: any[] = [];
+        // let for_migrant_workers: any[] = [];
 
-        const migrantWorkerFiles = (req.files as MulterFile[])?.filter((file) =>
-            file.fieldname.includes("for_migrant_workers")
-        );
+        // const migrantWorkerFiles = (req.files as MulterFile[])?.filter((file) =>
+        //     file.fieldname.includes("for_migrant_workers")
+        // );
 
-        // Group files by index
-        const filesByIndex: Record<string, any> = {};
+        // // Group files by index
+        // const filesByIndex: Record<string, any> = {};
 
-        migrantWorkerFiles.forEach((file) => {
-            const match = file.fieldname.match(/\[([0-9]+)\]/);
-            if (match) {
-                const index = match[1];
+        // migrantWorkerFiles.forEach((file) => {
+        //     const match = file.fieldname.match(/\[([0-9]+)\]/);
+        //     if (match) {
+        //         const index = match[1];
 
-                if (!filesByIndex[index]) {
-                    filesByIndex[index] = {};
-                }
+        //         if (!filesByIndex[index]) {
+        //             filesByIndex[index] = {};
+        //         }
 
-                if (file.fieldname.includes("tab_image")) {
-                    filesByIndex[index].image = file;
-                } else if (file.fieldname.includes("tab_icon")) {
-                    filesByIndex[index].icon = file;
-                }
-            }
-        });
+        //         if (file.fieldname.includes("tab_image")) {
+        //             filesByIndex[index].image = file;
+        //         } else if (file.fieldname.includes("tab_icon")) {
+        //             filesByIndex[index].icon = file;
+        //         }
+        //     }
+        // });
 
-        // Now loop through each index and prepare full object
-        for (const index in filesByIndex) {
-            const name = req.body?.for_migrant_workers?.[index]?.for_migrant_workers_tab_name || "";
-            const status = req.body?.for_migrant_workers?.[index]?.for_migrant_workers_tab_status || "";
-            const serial = req.body?.for_migrant_workers?.[index]?.for_migrant_workers_tab_serial || "";
+        // // Now loop through each index and prepare full object
+        // for (const index in filesByIndex) {
+        //     const name = req.body?.for_migrant_workers?.[index]?.for_migrant_workers_tab_name || "";
+        //     const status = req.body?.for_migrant_workers?.[index]?.for_migrant_workers_tab_status || "";
+        //     const serial = req.body?.for_migrant_workers?.[index]?.for_migrant_workers_tab_serial || "";
 
-            const imageFile = filesByIndex[index].image;
-            const iconFile = filesByIndex[index].icon;
+        //     const imageFile = filesByIndex[index].image;
+        //     const iconFile = filesByIndex[index].icon;
 
-            const uploadedImage = imageFile ? await FileUploadHelper.uploadToSpaces(imageFile) : null;
-            const uploadedIcon = iconFile ? await FileUploadHelper.uploadToSpaces(iconFile) : null;
+        //     const uploadedImage = imageFile ? await FileUploadHelper.uploadToSpaces(imageFile) : null;
+        //     const uploadedIcon = iconFile ? await FileUploadHelper.uploadToSpaces(iconFile) : null;
 
-            for_migrant_workers.push({
-                for_migrant_workers_tab_name: name,
-                for_migrant_workers_tab_status: status,
-                for_migrant_workers_tab_serial: serial,
-                for_migrant_workers_tab_image: uploadedImage?.Location,
-                for_migrant_workers_tab_image_key: uploadedImage?.Key,
-                for_migrant_workers_tab_icon: uploadedIcon?.Location,
-                for_migrant_workers_tab_icon_key: uploadedIcon?.Key,
-            });
-        }
+        //     for_migrant_workers.push({
+        //         for_migrant_workers_tab_name: name,
+        //         for_migrant_workers_tab_status: status,
+        //         for_migrant_workers_tab_serial: serial,
+        //         for_migrant_workers_tab_image: uploadedImage?.Location,
+        //         for_migrant_workers_tab_image_key: uploadedImage?.Key,
+        //         for_migrant_workers_tab_icon: uploadedIcon?.Location,
+        //         for_migrant_workers_tab_icon_key: uploadedIcon?.Key,
+        //     });
+        // }
 
 
         // Prepare updated data
