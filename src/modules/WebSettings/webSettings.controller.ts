@@ -4,6 +4,7 @@ import sendResponse from '../../utils/sendResponse';
 import httpStatus from 'http-status';
 import { FileUploadHelper } from '../../helpers/FileUploadHelper';
 import { WebSettingsService } from './webSettings.services';
+import AppError from '../../errors/AppError';
 
 
 
@@ -77,21 +78,11 @@ const getSettings = catchAsync(async (req, res) => {
 });
 
 const updateSettings = catchAsync(async (req, res) => {
-
-    // let title = "";
-    // if (req.body.data) {
-    //   const parsedData = JSON.parse(req.body.data);
-    //   title = parsedData.title;
-    // } else {
-    //   title = req.body.title;
-    // }
-
     // Fetch existing settings from DB to get old image keys
     const existingSettingsArray = await WebSettingsService.getSettingsServices();
 
     // Ensure we are working with a single settings object
     const existingSettings = existingSettingsArray?.[0];
-    console.log(existingSettings, 'exisingsettings in settings controller');
 
     // Default values if settings don't exist
     let logo = existingSettings?.logo || "";
@@ -135,32 +126,67 @@ const updateSettings = catchAsync(async (req, res) => {
             }
         }
 
-        const { who_we_are, testimonials, ...rest } = req.body;
-        const parsedWhoWeAre = JSON.parse(who_we_are);
-        const parsedTestimonials = JSON.parse(testimonials);
-        const parsedData = {
-            ...rest,
-            who_we_are: {
-                ...existingSettings?.who_we_are,
-                ...parsedWhoWeAre,
-            },
-            testimonials: parsedTestimonials,
-        };
+        // Handle for_migrant_workers files
+        let for_migrant_workers: any[] = [];
+
+        const migrantWorkerFiles = (req.files as MulterFile[])?.filter((file) =>
+            file.fieldname.includes("for_migrant_workers")
+        );
+
+        // Group files by index
+        const filesByIndex: Record<string, any> = {};
+
+        migrantWorkerFiles.forEach((file) => {
+            const match = file.fieldname.match(/\[([0-9]+)\]/);
+            if (match) {
+                const index = match[1];
+
+                if (!filesByIndex[index]) {
+                    filesByIndex[index] = {};
+                }
+
+                if (file.fieldname.includes("tab_image")) {
+                    filesByIndex[index].image = file;
+                } else if (file.fieldname.includes("tab_icon")) {
+                    filesByIndex[index].icon = file;
+                }
+            }
+        });
+
+        // Now loop through each index and prepare full object
+        for (const index in filesByIndex) {
+            const name = req.body?.for_migrant_workers?.[index]?.for_migrant_workers_tab_name || "";
+            const status = req.body?.for_migrant_workers?.[index]?.for_migrant_workers_tab_status || "";
+            const serial = req.body?.for_migrant_workers?.[index]?.for_migrant_workers_tab_serial || "";
+
+            const imageFile = filesByIndex[index].image;
+            const iconFile = filesByIndex[index].icon;
+
+            const uploadedImage = imageFile ? await FileUploadHelper.uploadToSpaces(imageFile) : null;
+            const uploadedIcon = iconFile ? await FileUploadHelper.uploadToSpaces(iconFile) : null;
+
+            for_migrant_workers.push({
+                for_migrant_workers_tab_name: name,
+                for_migrant_workers_tab_status: status,
+                for_migrant_workers_tab_serial: serial,
+                for_migrant_workers_tab_image: uploadedImage?.Location,
+                for_migrant_workers_tab_image_key: uploadedImage?.Key,
+                for_migrant_workers_tab_icon: uploadedIcon?.Location,
+                for_migrant_workers_tab_icon_key: uploadedIcon?.Key,
+            });
+        }
 
 
         // Prepare updated data
         const updatedSettingsData = {
-            ...req.body,
-            ...parsedData,
-            who_we_are: parsedWhoWeAre,
-            testimonials: parsedTestimonials,
             logo,
             logo_key,
             favicon,
             favicon_key,
+            ...req.body,
+            for_migrant_workers: for_migrant_workers.length > 0 ? for_migrant_workers : existingSettings?.for_migrant_workers || [],
         };
 
-        console.log("Updating settings in database:", updatedSettingsData);
         const result = await WebSettingsService.updateSettingsServices(updatedSettingsData);
 
         sendResponse(res, {

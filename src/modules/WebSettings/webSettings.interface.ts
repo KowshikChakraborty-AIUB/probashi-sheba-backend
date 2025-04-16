@@ -27,6 +27,24 @@ export interface ITestimonial {
     testimonial_rating?: number;
 }
 
+export interface IForMigrantWorkersTabContents {
+    for_migrant_workers_tab_contents_title?: string;
+    for_migrant_workers_tab_contents_description?: string;
+    for_migrant_workers_tab_contents_link?: string;
+    for_migrant_workers_tab_contents_link_text?: string;
+}
+
+export interface IForMigrantWorkers {
+    for_migrant_workers_tab_name?: string;
+    for_migrant_workers_tab_image?: string;
+    for_migrant_workers_tab_image_key?: string;
+    for_migrant_workers_tab_icon?: string;
+    for_migrant_workers_tab_icon_key?: string;
+    for_migrant_workers_tab_status?: string;
+    for_migrant_workers_tab_serial?: string;
+    for_migrant_workers_tab_contents?: IForMigrantWorkersTabContents[];
+}
+
 export interface IWebSettings {
     title: string;
     favicon?: string;
@@ -47,4 +65,5 @@ export interface IWebSettings {
     terms?: string;
     who_we_are?: IWhoWeAre;
     testimonials?: ITestimonial[];
+    for_migrant_workers?: IForMigrantWorkers[];
 };
