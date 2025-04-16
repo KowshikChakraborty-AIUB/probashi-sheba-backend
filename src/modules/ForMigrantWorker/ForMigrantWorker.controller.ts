@@ -71,9 +71,6 @@ const postForMigrantWorker: RequestHandler = async (
 const getForMigrantWorker = catchAsync(async (req, res) => {
     const result = await ForMigrantWorkerServices.getForMigrantWorkerService();
 
-    //console.log(result);
-    //console.log(result.length);
-
     if (result.length === 0) {
         throw new AppError(404, "No data found");
     }
@@ -102,7 +99,7 @@ const updateForMigrantWorker: RequestHandler = async (
 
         if (result) {
             return sendResponse(res, {
-                statusCode: statusCodes.OK,
+                statusCode: httpStatus.OK,
                 success: true,
                 message: "For Migration Worker info Updated Successfully!",
                 data: result
@@ -116,8 +113,37 @@ const updateForMigrantWorker: RequestHandler = async (
 };
 
 
+const deleteForMigrantWorker = catchAsync(async (req, res, next) => {
+    console.log(req.body, 'req.body');
+    // try {
+    //     const forMigrantWorkerId = req.body._id
+    //     console.log(forMigrantWorkerId, 'forMigrantWorkerId');
+
+
+    //     const result = await ForMigrantWorkerServices.deleteForMigrantWorkerService(forMigrantWorkerId);
+    //     if (result) {
+    //         if (req.body?.for_migrant_workers_tab_image_key) {
+    //             await FileUploadHelper.deleteFromSpaces(req.body?.for_migrant_workers_tab_image_key);
+    //         }
+    //         if (req.body?.for_migrant_workers_tab_icon_key) {
+    //             await FileUploadHelper.deleteFromSpaces(req.body?.for_migrant_workers_tab_icon_key);
+    //         }
+    //         return sendResponse(res, {
+    //             statusCode: httpStatus.OK,
+    //             success: true,
+    //             message: "For Migrant Worker info deleted successfully !",
+    //         });
+    //     } else {
+    //         throw new AppError(400, "For Migrant Worker info delete failed !");
+    //     }
+    // } catch (error: any) {
+    //     next(error);
+    // }
+});
+
 export const ForMigrantWorkerController = {
     postForMigrantWorker,
     getForMigrantWorker,
     updateForMigrantWorker,
+    deleteForMigrantWorker
 };

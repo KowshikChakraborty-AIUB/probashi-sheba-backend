@@ -22,6 +22,6 @@ router
         ]),
         ForMigrantWorkerController.updateForMigrantWorker
     )
-//   .delete(deleteACategoryInfo);
+    .delete(ForMigrantWorkerController.deleteForMigrantWorker);
 
 export const ForMigrantWorkerRoutes = router;

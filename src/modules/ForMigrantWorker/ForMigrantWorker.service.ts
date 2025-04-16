@@ -4,7 +4,7 @@ import statusCodes from 'http-status';
 import { IForMigrantWorker } from "./ForMigrantWorker.interface";
 import { ForMigrantWorkerModel } from "./ForMigrantWorker.model";
 
-// Create BMET Registration
+// Create ForMigrantWorker
 const postForMigrantWorkerService = async (
     payload: IForMigrantWorker
 ): Promise<IForMigrantWorker> => {
@@ -21,13 +21,13 @@ const postForMigrantWorkerService = async (
 };
 
 
-//get BMET Registration info
+//get ForMigrantWorker info
 const getForMigrantWorkerService = async () => {
     const result = await ForMigrantWorkerModel.find();
     return result;
 };
 
-// update BMET Registration info
+// update ForMigrantWorker info
 const updateForMigrantWorkerService = async (
     forMigrantWorkerId: string,
     payload: Partial<IForMigrantWorker>
@@ -39,9 +39,20 @@ const updateForMigrantWorkerService = async (
     return result;
 };
 
+// delete ForMigrantWorker info
+export const deleteForMigrantWorkerService = async (_id: string): Promise<IForMigrantWorker | any> => {
+    const updateForMigrantWorkerInfo = await ForMigrantWorkerModel.findOne({ _id: _id });
+    if (!updateForMigrantWorkerInfo) {
+        return {};
+    }
+    const result = await ForMigrantWorkerModel.findByIdAndDelete({ _id: _id }
+    );
+    return result;
+};
 
 export const ForMigrantWorkerServices = {
     postForMigrantWorkerService,
     getForMigrantWorkerService,
     updateForMigrantWorkerService,
+    deleteForMigrantWorkerService
 };
