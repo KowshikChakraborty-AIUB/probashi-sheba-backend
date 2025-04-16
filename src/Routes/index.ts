@@ -4,6 +4,7 @@ import { UserRoutes } from '../modules/User/user.route';
 import { BMETRegistrationRoutes } from '../modules/BMETRegistration/BMETRegistration.route';
 import { nearestPassportOfficeRoutes } from '../modules/NearestPassportOffice/nearestPassportOffice.route';
 import { WebSettingsRoutes } from '../modules/WebSettings/webSettings.route';
+import { ForMigrantWorkerRoutes } from '../modules/ForMigrantWorker/ForMigrantWorker.route';
 
 
 const router = Router();
@@ -28,6 +29,10 @@ const moduleRoutes = [
     {
         path: '/web-settings',
         route: WebSettingsRoutes,
+    },
+    {
+        path: '/for-migrant-worker',
+        route: ForMigrantWorkerRoutes,
     },
 ];
 
