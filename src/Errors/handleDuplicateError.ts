@@ -1,7 +1,7 @@
 /* eslint-disable  @typescript-eslint/no-explicit-any */
 
 import httpStatus from "http-status";
-import { TErrorMessages, TGenericErrorResponse } from "../Interface/error";
+import { TErrorMessages, TGenericErrorResponse } from "../interface/error";
 
 
 const handleDuplicateError = (err: any): TGenericErrorResponse => {

@@ -4,6 +4,7 @@ import sendResponse from '../../utils/sendResponse';
 import httpStatus from 'http-status';
 import { FileUploadHelper } from '../../helpers/FileUploadHelper';
 import { WebSettingsService } from './webSettings.services';
+import AppError from '../../errors/AppError';
 
 
 
@@ -77,15 +78,6 @@ const getSettings = catchAsync(async (req, res) => {
 });
 
 const updateSettings = catchAsync(async (req, res) => {
-
-    // let title = "";
-    // if (req.body.data) {
-    //   const parsedData = JSON.parse(req.body.data);
-    //   title = parsedData.title;
-    // } else {
-    //   title = req.body.title;
-    // }
-
     // Fetch existing settings from DB to get old image keys
     const existingSettingsArray = await WebSettingsService.getSettingsServices();
 
@@ -134,33 +126,47 @@ const updateSettings = catchAsync(async (req, res) => {
             }
         }
 
-        const { who_we_are, testimonials, for_migrant_workers, ...rest } = req.body;
+        const { who_we_are, testimonials, ...rest } = req.body;
 
         const parsedWhoWeAre = JSON.parse(who_we_are);
-        const parsedTestimonials = JSON.parse(testimonials);
-        const parsedForMigrantWorkers = JSON.parse(for_migrant_workers);
+        // const parsedTestimonials = JSON.parse(testimonials);
         const parsedData = {
             ...rest,
             who_we_are: {
                 ...existingSettings?.who_we_are,
                 ...parsedWhoWeAre,
             },
-            testimonials: parsedTestimonials,
-            // for_migrant_workers: {
-            //     ...existingSettings?.for_migrant_workers,
-            //     ...parsedForMigrantWorkers,
-            // },
+            // testimonials: parsedTestimonials,
         };
-        console.log(parsedForMigrantWorkers, 'parsedForMigrantWorkers in settings controller');
 
+        let for_migrant_workers = []
+        if (req.files && "for_migrant_workers" in req.files) {
+            const files = req.files["for_migrant_workers"];
+            const forMigrantWorkerNames: string[] = JSON.parse(req.body.for_migrant_workers || "[]");
 
+            if (forMigrantWorkerNames.length !== files.length) {
+                throw new AppError(400, "Number of migrant workers names and files must match");
+            }
+
+            for (let i = 0; i < files.length; i++) {
+                const uploaded = await FileUploadHelper.uploadToSpaces(files[i]);
+                for_migrant_workers.push({
+                    for_migrant_workers_tab_name: forMigrantWorkerNames[i],
+                    for_migrant_workers_tab_image: uploaded?.Location,
+                    for_migrant_workers_tab_image_key: uploaded?.Key,
+                });
+            }
+        }
+
+        console.log(req.files);
+        
         // Prepare updated data
         const updatedSettingsData = {
             ...req.body,
             ...parsedData,
             who_we_are: parsedWhoWeAre,
-            testimonials: parsedTestimonials,
-            for_migrant_workers: parsedForMigrantWorkers,
+            // testimonials: parsedTestimonials,
+            for_migrant_workers,
             logo,
             logo_key,
             favicon,

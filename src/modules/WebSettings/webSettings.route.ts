@@ -6,14 +6,15 @@ import { FileUploadHelper } from '../../helpers/FileUploadHelper';
 const router = express.Router();
 
 // get user active category and post update delete category
-router.route("/").get(WebSettingsController.getSettings).post(FileUploadHelper.ImageUpload.fields([
-    { name: "logo", maxCount: 1 },
-    { name: "favicon", maxCount: 1 },
-]), WebSettingsController.createSettings).patch(FileUploadHelper.ImageUpload.fields([
-    { name: "logo", maxCount: 1 },
-    { name: "favicon", maxCount: 1 },
-]),
-    WebSettingsController.updateSettings)
+router.route("/")
+    .get(WebSettingsController.getSettings)
+    .post(FileUploadHelper.ImageUpload.fields([
+        { name: "logo", maxCount: 1 },
+        { name: "favicon", maxCount: 1 },
+        { name: "for_migrant_workers", maxCount: 10 }
+    ]), WebSettingsController.createSettings)
+    .patch(FileUploadHelper.ImageUpload.any(), WebSettingsController.updateSettings)
+
 // .delete(CategoryController.deleteCategory)
 
 // get all active inactive category for dashboard
