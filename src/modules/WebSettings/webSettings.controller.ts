@@ -126,54 +126,46 @@ const updateSettings = catchAsync(async (req, res) => {
             }
         }
 
-        const { who_we_are, testimonials, ...rest } = req.body;
-
-        const parsedWhoWeAre = JSON.parse(who_we_are);
-        // const parsedTestimonials = JSON.parse(testimonials);
-        const parsedData = {
-            ...rest,
-            who_we_are: {
-                ...existingSettings?.who_we_are,
-                ...parsedWhoWeAre,
-            },
-            // testimonials: parsedTestimonials,
-        };
 
         let for_migrant_workers = []
-        if (req.files && "for_migrant_workers" in req.files) {
-            const files = req.files["for_migrant_workers"];
-            const forMigrantWorkerNames: string[] = JSON.parse(req.body.for_migrant_workers || "[]");
+        const migrantWorkersFiles = (req.files as MulterFile[])?.filter((file) => file.fieldname.includes("for_migrant_workers") && file.fieldname.includes('for_migrant_workers_tab_image'));
 
-            if (forMigrantWorkerNames.length !== files.length) {
-                throw new AppError(400, "Number of migrant workers names and files must match");
-            }
+        // Loop through files and extract associated text fields
+        for (let i = 0; i < migrantWorkersFiles.length; i++) {
+            const file = migrantWorkersFiles[i];
+            const match = file.fieldname.match(/\[([0-9]+)\]/); // extract index
+            if (match) {
+                const index = match[1]
+                const name = req.body?.for_migrant_workers?.[index]?.for_migrant_workers_tab_name || "";
+                const status = req.body?.for_migrant_workers?.[index]?.for_migrant_workers_tab_status || "";
+                const serial = req.body?.for_migrant_workers?.[index]?.for_migrant_workers_tab_serial || "";
 
-            for (let i = 0; i < files.length; i++) {
-                const uploaded = await FileUploadHelper.uploadToSpaces(files[i]);
+
+                const uploaded = await FileUploadHelper.uploadToSpaces(file);
+
                 for_migrant_workers.push({
-                    for_migrant_workers_tab_name: forMigrantWorkerNames[i],
+                    for_migrant_workers_tab_name: name,
+                    for_migrant_workers_tab_status: status,
+                    for_migrant_workers_tab_serial: serial,
                     for_migrant_workers_tab_image: uploaded?.Location,
                     for_migrant_workers_tab_image_key: uploaded?.Key,
                 });
             }
         }
 
-        console.log(req.files);
-        
         // Prepare updated data
         const updatedSettingsData = {
-            ...req.body,
-            ...parsedData,
-            who_we_are: parsedWhoWeAre,
-            // testimonials: parsedTestimonials,
-            for_migrant_workers,
             logo,
             logo_key,
             favicon,
             favicon_key,
+            ...req.body,
+            for_migrant_workers: for_migrant_workers.length > 0 ? for_migrant_workers : existingSettings?.for_migrant_workers || [],
         };
+        console.log(updatedSettingsData, "updatedSettingsData");
 
         const result = await WebSettingsService.updateSettingsServices(updatedSettingsData);
+        console.log(result, "result");
 
         sendResponse(res, {
             statusCode: httpStatus.OK,
