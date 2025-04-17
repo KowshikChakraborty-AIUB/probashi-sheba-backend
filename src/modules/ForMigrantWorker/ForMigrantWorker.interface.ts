@@ -1,4 +1,7 @@
+import { Types } from "mongoose";
+
 export interface IForMigrantWorker {
+    _id?: Types.ObjectId;
     for_migrant_workers_tab_name?: string;
     for_migrant_workers_tab_image?: string;
     for_migrant_workers_tab_image_key?: string;

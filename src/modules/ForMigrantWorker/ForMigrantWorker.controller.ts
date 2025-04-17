@@ -114,31 +114,33 @@ const updateForMigrantWorker: RequestHandler = async (
 
 
 const deleteForMigrantWorker = catchAsync(async (req, res, next) => {
-    console.log(req.body, 'req.body');
-    // try {
-    //     const forMigrantWorkerId = req.body._id
-    //     console.log(forMigrantWorkerId, 'forMigrantWorkerId');
 
-
-    //     const result = await ForMigrantWorkerServices.deleteForMigrantWorkerService(forMigrantWorkerId);
-    //     if (result) {
-    //         if (req.body?.for_migrant_workers_tab_image_key) {
-    //             await FileUploadHelper.deleteFromSpaces(req.body?.for_migrant_workers_tab_image_key);
-    //         }
-    //         if (req.body?.for_migrant_workers_tab_icon_key) {
-    //             await FileUploadHelper.deleteFromSpaces(req.body?.for_migrant_workers_tab_icon_key);
-    //         }
-    //         return sendResponse(res, {
-    //             statusCode: httpStatus.OK,
-    //             success: true,
-    //             message: "For Migrant Worker info deleted successfully !",
-    //         });
-    //     } else {
-    //         throw new AppError(400, "For Migrant Worker info delete failed !");
-    //     }
-    // } catch (error: any) {
-    //     next(error);
-    // }
+    try {
+        const forMigrantWorkerId = req.body._id
+        const result = await ForMigrantWorkerServices.deleteForMigrantWorkerService(forMigrantWorkerId);
+        if (result) {
+            if (req.body?.for_migrant_workers_tab_image_key) {
+                await FileUploadHelper.deleteFromSpaces(req.body?.for_migrant_workers_tab_image_key);
+            }
+            if (req.body?.for_migrant_workers_tab_icon_key) {
+                await FileUploadHelper.deleteFromSpaces(req.body?.for_migrant_workers_tab_icon_key);
+            }
+            return sendResponse(res, {
+                statusCode: httpStatus.OK,
+                success: true,
+                message: "For Migrant Worker info deleted successfully !",
+            });
+        } else {
+            throw new AppError(400, "For Migrant Worker info delete failed !");
+        }
+    } catch (error: any) {
+        next(error);
+    }
+    return sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "For Migrant Worker info deleted successfully !",
+    });
 });
 
 export const ForMigrantWorkerController = {
