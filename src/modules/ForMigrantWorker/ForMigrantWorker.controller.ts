@@ -2,9 +2,8 @@ import { Request, Response, NextFunction, RequestHandler } from "express";
 import AppError from "../../errors/AppError";
 import sendResponse from "../../utils/sendResponse";
 import { FileUploadHelper } from "../../helpers/FileUploadHelper";
-import statusCodes from 'http-status';
+import httpStatus from 'http-status';
 import catchAsync from "../../utils/catchAsync";
-import { IForMigrantWorker } from "./ForMigrantWorker.interface";
 import { ForMigrantWorkerServices } from "./ForMigrantWorker.service";
 import { ForMigrantWorkerModel } from "./ForMigrantWorker.model";
 
@@ -13,68 +12,64 @@ const postForMigrantWorker: RequestHandler = async (
     res: Response,
     next: NextFunction
 ): Promise<void> => {
+    if (!req.files || !("for_migrant_workers_tab_image" in req.files) || !("for_migrant_workers_tab_icon" in req.files)) {
+        return sendResponse(res, {
+            success: false,
+            statusCode: httpStatus.BAD_REQUEST,
+            message: 'Image and Icon are required',
+        });
+    }
+
+
+    let image, image_key;
+    let icon, icon_key;
     try {
-        const requestData = req.body;
+        const tabImage = req.files["for_migrant_workers_tab_image"][0];
+        const tabIcon = req.files["for_migrant_workers_tab_icon"][0];
 
-        // Handle passport image
-        let passport_image = "";
-        let passport_image_key = "";
+        const tabImageUpload = await FileUploadHelper.uploadToSpaces(tabImage);
 
-        if (req.files && "passport_image" in req.files) {
-
-            const passportImg = req.files["passport_image"][0];
-            const uploaded = await FileUploadHelper.uploadToSpaces(passportImg); // assuming your helper
-            passport_image = uploaded?.Location;
-            passport_image_key = uploaded?.Key;
-        } else {
-            throw new AppError(400, "Passport image is required.");
+        if (tabImageUpload) {
+            image = tabImageUpload?.Location;
+            image_key = tabImageUpload?.Key;
         }
 
-        // Handle supporting documents
-        let supporting_documents = [];
-        if (req.files && "supporting_documents" in req.files) {
-            const files = req.files["supporting_documents"];
-            const documentNames: string[] = JSON.parse(req.body.document_names || "[]");
+        const tabIconUpload = await FileUploadHelper.uploadToSpaces(tabIcon);
 
-            if (documentNames.length !== files.length) {
-                throw new AppError(400, "Number of document names and files must match");
-            }
-
-            for (let i = 0; i < files.length; i++) {
-                const uploaded = await FileUploadHelper.uploadToSpaces(files[i]);
-                supporting_documents.push({
-                    document_name: documentNames[i],
-                    document_image: uploaded?.Location,
-                    document_image_key: uploaded?.Key,
-                });
-            }
+        if (tabIconUpload) {
+            icon = tabIconUpload.Location;
+            icon_key = tabIconUpload.Key;
         }
 
-        const data: IForMigrantWorker = {
-            ...requestData,
-            passport_image,
-            passport_image_key,
+        // Get the highest serial
+        const lastForMigrantWorkerSerial = await ForMigrantWorkerModel.findOne().sort({ for_migrant_workers_tab_serial: -1 });
 
-        };
+        // Determine the new serial
+        const newForMigrantWorkerSerial = (lastForMigrantWorkerSerial?.for_migrant_workers_tab_serial ?? 0) + 1;
 
-        const result = await ForMigrantWorkerServices.postForMigrantWorkerService(data);
+        const { for_migrant_workers_tab_contents } = req.body;
+        console.log(for_migrant_workers_tab_contents, 'for_migrant_workers_tab_contents');
 
-        return sendResponse<IForMigrantWorker>(res, {
-            statusCode: statusCodes.CREATED,
+        const parsedContents = JSON.parse(for_migrant_workers_tab_contents);
+
+        const forMigrantWorkersData = { ...req.body, icon, icon_key, image, image_key, for_migrant_workers_tab_serial: newForMigrantWorkerSerial, for_migrant_workers_tab_contents: parsedContents };
+
+        const result = await ForMigrantWorkerServices.postForMigrantWorkerService(forMigrantWorkersData);
+
+        return sendResponse(res, {
             success: true,
-            message: "For Migration Worker info Created Successfully!",
+            statusCode: httpStatus.OK,
+            message: "For Migrant Worker info created successfully",
             data: result,
         });
     } catch (error) {
-        next(error);
+        console.error("Error uploading files:", error);
+        return res.status(500).json({ message: "Internal server error", error });
     }
 };
 
 const getForMigrantWorker = catchAsync(async (req, res) => {
     const result = await ForMigrantWorkerServices.getForMigrantWorkerService();
-
-    //console.log(result);
-    //console.log(result.length);
 
     if (result.length === 0) {
         throw new AppError(404, "No data found");
@@ -83,7 +78,7 @@ const getForMigrantWorker = catchAsync(async (req, res) => {
     sendResponse(res, {
         success: true,
         statusCode: 200,
-        message: 'BMET registration info retrieved successfully',
+        message: 'For Migration Worker info info retrieved successfully',
         data: result,
     });
 
@@ -104,7 +99,7 @@ const updateForMigrantWorker: RequestHandler = async (
 
         if (result) {
             return sendResponse(res, {
-                statusCode: statusCodes.OK,
+                statusCode: httpStatus.OK,
                 success: true,
                 message: "For Migration Worker info Updated Successfully!",
                 data: result
@@ -118,8 +113,37 @@ const updateForMigrantWorker: RequestHandler = async (
 };
 
 
+const deleteForMigrantWorker = catchAsync(async (req, res, next) => {
+    console.log(req.body, 'req.body');
+    // try {
+    //     const forMigrantWorkerId = req.body._id
+    //     console.log(forMigrantWorkerId, 'forMigrantWorkerId');
+
+
+    //     const result = await ForMigrantWorkerServices.deleteForMigrantWorkerService(forMigrantWorkerId);
+    //     if (result) {
+    //         if (req.body?.for_migrant_workers_tab_image_key) {
+    //             await FileUploadHelper.deleteFromSpaces(req.body?.for_migrant_workers_tab_image_key);
+    //         }
+    //         if (req.body?.for_migrant_workers_tab_icon_key) {
+    //             await FileUploadHelper.deleteFromSpaces(req.body?.for_migrant_workers_tab_icon_key);
+    //         }
+    //         return sendResponse(res, {
+    //             statusCode: httpStatus.OK,
+    //             success: true,
+    //             message: "For Migrant Worker info deleted successfully !",
+    //         });
+    //     } else {
+    //         throw new AppError(400, "For Migrant Worker info delete failed !");
+    //     }
+    // } catch (error: any) {
+    //     next(error);
+    // }
+});
+
 export const ForMigrantWorkerController = {
     postForMigrantWorker,
     getForMigrantWorker,
     updateForMigrantWorker,
+    deleteForMigrantWorker
 };
