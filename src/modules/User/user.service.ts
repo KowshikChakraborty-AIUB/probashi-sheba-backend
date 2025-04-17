@@ -18,17 +18,17 @@ const sendPhoneOtpService = async (user_phone: string) => {
   // if (existingUser && existingUser.user_phone_is_verified) {
   //     throw new Error("Phone number already registered");
   // }
-  const nanoid = customAlphabet('1234567890', 5)
+  const nanoid = customAlphabet('1234567890', 4)
   const otp_code = nanoid()
   const otp_expires_at = new Date(Date.now() + 10 * 60 * 1000); // OTP valid for 10 minutes
 
   if (existingUser) {
     existingUser.otp_code = Number(otp_code);
     existingUser.otp_expires_at = otp_expires_at;
+    SendPhoneOTP(otp_code, user_phone);
     await existingUser.save();
     return existingUser;
   }
-  SendPhoneOTP(otp_code, user_phone);
 
   const user = await userModel.create({
     user_phone,
@@ -141,9 +141,9 @@ const verifyPhoneOtpServices = async (payload: IUserInterface) => {
   if (!user) {
     throw new Error("Invalid OTP or phone number");
   }
-  if (user.otp_expires_at && user.otp_expires_at < new Date()) {
-    throw new Error("OTP expired");
-  }
+  // if (user.otp_expires_at && user.otp_expires_at < new Date()) {
+  //   throw new Error("OTP expired");
+  // }
   // Update user status to verified and clear OTP
   user.user_phone_is_verified = true;
   user.otp_code = undefined;
@@ -430,6 +430,40 @@ const updateUserServices = async (_id: string, payload: Partial<IUserInterface>)
   return result;
 }
 
+
+// Forgot password
+const forgotPasswordServices = async (user_phone: string) => {
+  const existingUser = await userModel.findOne({ user_phone });
+  console.log("Existing User", existingUser);
+
+  if (!existingUser) {
+    throw new AppError(httpStatus.BAD_REQUEST, "User doesn't exist!");
+  }
+  // if (existingUser && existingUser.user_phone_is_verified) {
+  //     throw new Error("Phone number already registered");
+  // }
+  const nanoid = customAlphabet('1234567890', 4)
+  const otp_code = nanoid()
+  const otp_expires_at = new Date(Date.now() + 10 * 60 * 1000); // OTP valid for 10 minutes
+
+  if (existingUser) {
+    existingUser.otp_code = Number(otp_code);
+    existingUser.otp_expires_at = otp_expires_at;
+    SendPhoneOTP(otp_code, user_phone);
+    await existingUser.save();
+    return existingUser;
+  }
+
+  const result = await userModel.findByIdAndUpdate({ user_phone }, {
+    $set: {
+      otp_code: Number(otp_code),
+    }
+  });
+
+  return result;
+}
+
+
 export const UserServices = {
   registerUserServices,
   verifyPhoneOtpServices,
@@ -437,5 +471,6 @@ export const UserServices = {
   sendPhoneOtpService,
   sendEmailOtpService,
   verifyEmailOtpServices,
-  updateUserServices
+  updateUserServices,
+  forgotPasswordServices
 };  

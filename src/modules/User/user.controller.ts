@@ -1,3 +1,4 @@
+import { log } from "console";
 import { FileUploadHelper } from "../../helpers/FileUploadHelper";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
@@ -140,6 +141,26 @@ const updateUser = catchAsync(async (req, res) => {
     });
 });
 
+const forgotPassword = catchAsync(async (req, res) => {
+    const {user_phone} = req.body;
+    const result = await UserServices.forgotPasswordServices(user_phone);
+    const {  otp_code } = result;
+
+    const userData = {
+        user_phone,
+        otp_code,
+    }
+
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: 'Please check your phone number, we send a OTP!',
+      data: userData,
+    });
+});
+
+
 export const UserControllers = {
     sendPhoneOtp,
     sendEmailOtp,
@@ -147,5 +168,6 @@ export const UserControllers = {
     verifyEmailOtp,
     registerUser,
     login,
-    updateUser
+    updateUser,
+    forgotPassword
 };  
