@@ -2,13 +2,15 @@ import AppError from "../../errors/AppError";
 import statusCodes from 'http-status';
 import { ITestimonial } from "./testimonial.interface";
 import { TestimonialModel } from "./testimonial.model";
+import e from "express";
 
 // Create Testimonial
 const postTestimonialService = async (
     payload: ITestimonial
 ): Promise<ITestimonial> => {
 
-    const existingTestimonial = await TestimonialModel.find({ testimonial_name: payload?.testimonial_name })
+    const existingTestimonial = await TestimonialModel.findOne({ testimonial_name: payload?.testimonial_name })
+    console.log(existingTestimonial, "existingTestimonial");
 
     if (existingTestimonial) {
         throw new AppError(statusCodes.BAD_REQUEST, 'You already added this testimonial!');
