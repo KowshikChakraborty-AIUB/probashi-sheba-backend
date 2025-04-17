@@ -10,7 +10,6 @@ const postTestimonialService = async (
 ): Promise<ITestimonial> => {
 
     const existingTestimonial = await TestimonialModel.findOne({ testimonial_name: payload?.testimonial_name })
-    console.log(existingTestimonial, "existingTestimonial");
 
     if (existingTestimonial) {
         throw new AppError(statusCodes.BAD_REQUEST, 'You already added this testimonial!');

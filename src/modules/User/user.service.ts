@@ -8,6 +8,7 @@ import { emailTemplate } from "../../utils/emailTemplate";
 import { emailHelper } from "../../helpers/emailHelper";
 import { IUserInterface } from "./user.interface";
 import { customAlphabet } from 'nanoid';
+import { SendPhoneOTP } from "../../middlewares/sendPhoneOTP";
 
 
 // Send phone otp
@@ -27,6 +28,7 @@ const sendPhoneOtpService = async (user_phone: string) => {
     await existingUser.save();
     return existingUser;
   }
+  SendPhoneOTP(otp_code, user_phone);
 
   const user = await userModel.create({
     user_phone,
