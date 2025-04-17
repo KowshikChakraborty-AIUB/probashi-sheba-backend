@@ -6,6 +6,7 @@ import { nearestPassportOfficeRoutes } from '../modules/NearestPassportOffice/ne
 import { WebSettingsRoutes } from '../modules/WebSettings/webSettings.route';
 import { ForMigrantWorkerRoutes } from '../modules/ForMigrantWorker/ForMigrantWorker.route';
 import { TestimonialRoutes } from '../modules/Testimonial/testimonial.route';
+import { WhoWeAreRoutes } from '../modules/WhoWeAre/whoWeAre.route';
 
 
 const router = Router();
@@ -38,6 +39,10 @@ const moduleRoutes = [
     {
         path: '/testimonial',
         route: TestimonialRoutes,
+    },
+    {
+        path: '/who-we-are',
+        route: WhoWeAreRoutes,
     },
 ];
 

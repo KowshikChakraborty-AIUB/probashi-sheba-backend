@@ -1,24 +1,3 @@
-import { Types } from "mongoose";
-
-
-
-export interface IWhoWeAreItems {
-    image?: string;
-    image_key?: string;
-    unit?: number;
-    title?: string;
-}
-
-export interface IWhoWeAre {
-    who_we_are_title?: string;
-    who_we_are_description?: string;
-    who_we_are_services?: IWhoWeAreItems;
-    who_we_are_migrants?: IWhoWeAreItems;
-    who_we_are_saved?: IWhoWeAreItems;
-    who_we_are_days?: IWhoWeAreItems;
-    who_we_are_employees?: IWhoWeAreItems;
-}
-
 
 
 export interface IWebSettings {
@@ -39,5 +18,4 @@ export interface IWebSettings {
     about?: string;
     privacy_policy?: string;
     terms?: string;
-    who_we_are?: IWhoWeAre;
 };
