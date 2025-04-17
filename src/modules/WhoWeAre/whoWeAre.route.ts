@@ -9,9 +9,7 @@ router
     .route("/")
     // .get(ForMigrantWorkerController.getForMigrantWorker)
     .post(
-        FileUploadHelper.ImageUpload.fields([
-            { name: "who_we_are_item_image", maxCount: 1 },
-        ]),
+        FileUploadHelper.ImageUpload.any(),
         WhoWeAreController.postWhoWeAre
     )
 // .patch(
