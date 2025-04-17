@@ -41,8 +41,10 @@ const updateForMigrantWorkerService = async (
 
 // delete ForMigrantWorker info
 export const deleteForMigrantWorkerService = async (_id: string): Promise<IForMigrantWorker | any> => {
-    const updateForMigrantWorkerInfo = await ForMigrantWorkerModel.findOne({ _id: _id });
-    if (!updateForMigrantWorkerInfo) {
+
+    const forMigrantWorkerInfo = await ForMigrantWorkerModel.findById({ _id: _id });
+    console.log("forMigrantWorkerInfo", forMigrantWorkerInfo);
+    if (!forMigrantWorkerInfo) {
         return {};
     }
     const result = await ForMigrantWorkerModel.findByIdAndDelete({ _id: _id }

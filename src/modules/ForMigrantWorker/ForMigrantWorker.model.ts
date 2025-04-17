@@ -1,9 +1,10 @@
-import { Schema, model } from 'mongoose';
+import { Schema, Types, model } from 'mongoose';
 import { IForMigrantWorker } from './ForMigrantWorker.interface';
 
 
 const forMigrantWorkerSchema = new Schema<IForMigrantWorker>(
     {
+        _id: { type: Types.ObjectId },
         for_migrant_workers_tab_name: String,
         for_migrant_workers_tab_image: String,
         for_migrant_workers_tab_image_key: String,
