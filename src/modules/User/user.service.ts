@@ -347,6 +347,94 @@ const loginServices = async (payload: IUserInterface): Promise<{
   return {};
 }
 
+const updateUserServices = async (_id: string, payload: Partial<IUserInterface>) => {
+  const userData = await userModel.findById(_id);
+  if (!userData) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User not found');
+  }
+
+  // If the user wants to update the password, hash it
+  if (payload.user_password) {
+    payload.user_password = await hashPassword(
+      payload.user_password,
+    );
+  }
+
+  const result = await userModel.findByIdAndUpdate(_id, payload, {
+    new: true,
+    runValidators: true,
+  })
+
+  return result;
+}
+
+
+// Forgot password
+const forgotPasswordServices = async (user_phone: string) => {
+  const existingUser = await userModel.findOne({ user_phone });
+  console.log("Existing User", existingUser);
+
+  if (!existingUser) {
+    throw new AppError(httpStatus.BAD_REQUEST, "User doesn't exist!");
+  }
+  // if (existingUser && existingUser.user_phone_is_verified) {
+  //     throw new Error("Phone number already registered");
+  // }
+  const nanoid = customAlphabet('1234567890', 4)
+  const otp_code = nanoid()
+  const otp_expires_at = new Date(Date.now() + 10 * 60 * 1000); // OTP valid for 10 minutes
+
+  if (existingUser) {
+    existingUser.otp_code = Number(otp_code);
+    existingUser.otp_expires_at = otp_expires_at;
+    SendPhoneOTP(otp_code, user_phone);
+    await existingUser.save();
+    return existingUser;
+  }
+
+  const result = await userModel.findByIdAndUpdate({ user_phone }, {
+    $set: {
+      otp_code: Number(otp_code),
+    }
+  });
+
+  return result;
+}
+
+// Reset password
+const resetPasswordServices = async (user_phone: string, new_password: string, confirm_password: string) => {
+  const existingUser = await userModel.findOne({ user_phone });
+
+  if (!existingUser) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Invalid phone number");
+  }
+
+  //check password
+  if (new_password !== confirm_password) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "New password and Confirm password doesn't match!"
+    );
+  }
+
+  // if (existingUser.otp_expires_at && existingUser.otp_expires_at < new Date()) {
+  //   throw new AppError(httpStatus.BAD_REQUEST, "OTP expired");
+  // }
+
+  // Update user password and clear OTP
+  existingUser.user_password = await hashPassword(new_password);
+  existingUser.otp_code = undefined;
+  existingUser.otp_expires_at = undefined;
+  await existingUser.save();
+  return existingUser;
+}
+
+
+
+
+
+
+
 // Social login
 // const socialLoginServices = async (payload: ILoginData) => {
 //   const { user_email, login_type, social_id, user_name } = payload;
@@ -409,59 +497,6 @@ const loginServices = async (payload: IUserInterface): Promise<{
 //   throw new AppError(httpStatus.BAD_REQUEST, 'Invalid login type');
 // }
 
-const updateUserServices = async (_id: string, payload: Partial<IUserInterface>) => {
-  const userData = await userModel.findById(_id);
-  if (!userData) {
-    throw new AppError(httpStatus.NOT_FOUND, 'User not found');
-  }
-
-  // If the user wants to update the password, hash it
-  if (payload.user_password) {
-    payload.user_password = await hashPassword(
-      payload.user_password,
-    );
-  }
-
-  const result = await userModel.findByIdAndUpdate(_id, payload, {
-    new: true,
-    runValidators: true,
-  })
-
-  return result;
-}
-
-
-// Forgot password
-const forgotPasswordServices = async (user_phone: string) => {
-  const existingUser = await userModel.findOne({ user_phone });
-  console.log("Existing User", existingUser);
-
-  if (!existingUser) {
-    throw new AppError(httpStatus.BAD_REQUEST, "User doesn't exist!");
-  }
-  // if (existingUser && existingUser.user_phone_is_verified) {
-  //     throw new Error("Phone number already registered");
-  // }
-  const nanoid = customAlphabet('1234567890', 4)
-  const otp_code = nanoid()
-  const otp_expires_at = new Date(Date.now() + 10 * 60 * 1000); // OTP valid for 10 minutes
-
-  if (existingUser) {
-    existingUser.otp_code = Number(otp_code);
-    existingUser.otp_expires_at = otp_expires_at;
-    SendPhoneOTP(otp_code, user_phone);
-    await existingUser.save();
-    return existingUser;
-  }
-
-  const result = await userModel.findByIdAndUpdate({ user_phone }, {
-    $set: {
-      otp_code: Number(otp_code),
-    }
-  });
-
-  return result;
-}
 
 
 export const UserServices = {
@@ -472,5 +507,6 @@ export const UserServices = {
   sendEmailOtpService,
   verifyEmailOtpServices,
   updateUserServices,
-  forgotPasswordServices
+  forgotPasswordServices,
+  resetPasswordServices
 };  

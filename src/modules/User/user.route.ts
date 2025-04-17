@@ -22,5 +22,6 @@ router.patch('/profile', FileUploadHelper.ImageUpload.fields([
 // router.post('/social-login', UserControllers.socialLogin)
 
 router.post('/forgot-password', UserControllers.forgotPassword);
+router.post('/reset-password', UserControllers.resetPassword);
 
 export const UserRoutes = router;

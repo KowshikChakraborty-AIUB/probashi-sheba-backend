@@ -142,9 +142,9 @@ const updateUser = catchAsync(async (req, res) => {
 });
 
 const forgotPassword = catchAsync(async (req, res) => {
-    const {user_phone} = req.body;
+    const { user_phone } = req.body;
     const result = await UserServices.forgotPasswordServices(user_phone);
-    const {  otp_code } = result;
+    const { otp_code } = result;
 
     const userData = {
         user_phone,
@@ -153,13 +153,25 @@ const forgotPassword = catchAsync(async (req, res) => {
 
 
     sendResponse(res, {
-      success: true,
-      statusCode: httpStatus.OK,
-      message: 'Please check your phone number, we send a OTP!',
-      data: userData,
+        success: true,
+        statusCode: httpStatus.OK,
+        message: 'Please check your phone number, we send a OTP!',
+        data: userData,
     });
 });
 
+const resetPassword = catchAsync(async (req, res) => {
+    const { user_phone, new_password, confirm_password } = req.body
+    const result = await UserServices.resetPasswordServices(user_phone, new_password, confirm_password);
+
+
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: 'Password reset successfully',
+        data: result,
+    });
+});
 
 export const UserControllers = {
     sendPhoneOtp,
@@ -169,5 +181,6 @@ export const UserControllers = {
     registerUser,
     login,
     updateUser,
-    forgotPassword
+    forgotPassword,
+    resetPassword
 };  
