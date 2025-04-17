@@ -51,7 +51,7 @@ const createSettings = catchAsync(async (req, res) => {
         });
     } catch (error) {
         console.error("Error uploading files:", error);
-        return res.status(500).json({ message: "Internal server error", error });
+        res.status(500).json({ message: "Internal server error", error });
     }
 });
 
@@ -197,7 +197,7 @@ const updateSettings = catchAsync(async (req, res) => {
         });
     } catch (error) {
         console.error("Error updating settings:", error);
-        return res.status(500).json({ message: "Internal server error", error });
+        res.status(500).json({ message: "Internal server error", error });
     }
 });
 
