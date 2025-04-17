@@ -19,14 +19,6 @@ export interface IWhoWeAre {
     who_we_are_employees?: IWhoWeAreItems;
 }
 
-export interface ITestimonial {
-    testimonial_name?: string;
-    testimonial_image?: string;
-    testimonial_image_key?: string;
-    testimonial_occupation?: string;
-    testimonial_comment?: string;
-    testimonial_rating?: number;
-}
 
 
 export interface IWebSettings {
@@ -48,6 +40,4 @@ export interface IWebSettings {
     privacy_policy?: string;
     terms?: string;
     who_we_are?: IWhoWeAre;
-    testimonials?: ITestimonial[];
-    for_migrant_workers_refs?: Types.ObjectId[];
 };

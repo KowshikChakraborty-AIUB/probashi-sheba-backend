@@ -25,17 +25,6 @@ const WhoWeAreSchema = new mongoose.Schema(
     { _id: false }
 );
 
-const TestimonialSchema = new mongoose.Schema(
-    {
-        testimonial_name: { type: String },
-        testimonial_image: { type: String },
-        testimonial_image_key: { type: String },
-        testimonial_occupation: { type: String },
-        testimonial_comment: { type: String },
-        testimonial_rating: { type: Number },
-    },
-    { _id: false }
-);
 
 const WebSettingsSchema = new mongoose.Schema<IWebSettings>(
     {
@@ -57,11 +46,6 @@ const WebSettingsSchema = new mongoose.Schema<IWebSettings>(
         privacy_policy: { type: String },
         terms: { type: String },
         who_we_are: WhoWeAreSchema,
-        testimonials: [TestimonialSchema],
-        for_migrant_workers_refs: [{
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'forMigrantWorkers',
-        }],
     },
     {
         timestamps: true,
