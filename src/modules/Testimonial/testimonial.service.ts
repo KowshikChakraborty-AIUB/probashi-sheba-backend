@@ -1,60 +1,59 @@
 import AppError from "../../errors/AppError";
-
 import statusCodes from 'http-status';
-import { IForMigrantWorker } from "./testimonial.interface";
-import { ForMigrantWorkerModel } from "./testimonial.model";
+import { ITestimonial } from "./testimonial.interface";
+import { TestimonialModel } from "./testimonial.model";
 
-// Create ForMigrantWorker
-const postForMigrantWorkerService = async (
-    payload: IForMigrantWorker
-): Promise<IForMigrantWorker> => {
+// Create Testimonial
+const postTestimonialService = async (
+    payload: ITestimonial
+): Promise<ITestimonial> => {
 
-    const existingforMigrantWorker = await ForMigrantWorkerModel.find({ for_migrant_workers_tab_name: payload?.for_migrant_workers_tab_name })
+    const existingTestimonial = await TestimonialModel.find({ testimonial_name: payload?.testimonial_name })
 
-    if (existingforMigrantWorker.length) {
-        throw new AppError(statusCodes.BAD_REQUEST, 'You already added this tab!');
+    if (existingTestimonial) {
+        throw new AppError(statusCodes.BAD_REQUEST, 'You already added this testimonial!');
     }
 
 
-    const result = await ForMigrantWorkerModel.create(payload);
+    const result = await TestimonialModel.create(payload);
     return result;
 };
 
 
-//get ForMigrantWorker info
-const getForMigrantWorkerService = async () => {
-    const result = await ForMigrantWorkerModel.find();
+//get Testimonial info
+const getTestimonialService = async () => {
+    const result = await TestimonialModel.find();
     return result;
 };
 
-// update ForMigrantWorker info
-const updateForMigrantWorkerService = async (
-    forMigrantWorkerId: string,
-    payload: Partial<IForMigrantWorker>
+// update Testimonial info
+const updateTestimonialService = async (
+    TestimonialId: string,
+    payload: Partial<ITestimonial>
 ): Promise<any> => {
-    const result = await ForMigrantWorkerModel.findByIdAndUpdate({ _id: forMigrantWorkerId }, payload, {
+    const result = await TestimonialModel.findByIdAndUpdate({ _id: TestimonialId }, payload, {
         new: true, // returns the updated doc
         runValidators: true,
     });
     return result;
 };
 
-// delete ForMigrantWorker info
-export const deleteForMigrantWorkerService = async (_id: string): Promise<IForMigrantWorker | any> => {
+// delete Testimonial info
+export const deleteTestimonialService = async (_id: string): Promise<ITestimonial | any> => {
 
-    const forMigrantWorkerInfo = await ForMigrantWorkerModel.findById({ _id: _id });
-    console.log("forMigrantWorkerInfo", forMigrantWorkerInfo);
-    if (!forMigrantWorkerInfo) {
+    const TestimonialInfo = await TestimonialModel.findById({ _id: _id });
+    console.log("TestimonialInfo", TestimonialInfo);
+    if (!TestimonialInfo) {
         return {};
     }
-    const result = await ForMigrantWorkerModel.findByIdAndDelete({ _id: _id }
+    const result = await TestimonialModel.findByIdAndDelete({ _id: _id }
     );
     return result;
 };
 
-export const ForMigrantWorkerServices = {
-    postForMigrantWorkerService,
-    getForMigrantWorkerService,
-    updateForMigrantWorkerService,
-    deleteForMigrantWorkerService
+export const TestimonialServices = {
+    postTestimonialService,
+    getTestimonialService,
+    updateTestimonialService,
+    deleteTestimonialService
 };

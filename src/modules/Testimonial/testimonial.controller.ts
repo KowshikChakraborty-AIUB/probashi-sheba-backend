@@ -4,62 +4,52 @@ import sendResponse from "../../utils/sendResponse";
 import { FileUploadHelper } from "../../helpers/FileUploadHelper";
 import httpStatus from 'http-status';
 import catchAsync from "../../utils/catchAsync";
-import { ForMigrantWorkerServices } from "./testimonial.service";
-import { ForMigrantWorkerModel } from "./testimonial.model";
+import { TestimonialModel } from "./testimonial.model";
+import { TestimonialServices } from "./testimonial.service";
 
-const postForMigrantWorker: RequestHandler = async (
+
+const postTestimonial: RequestHandler = async (
     req: Request,
     res: Response,
     next: NextFunction
 ): Promise<void> => {
-    if (!req.files || !("for_migrant_workers_tab_image" in req.files) || !("for_migrant_workers_tab_icon" in req.files)) {
+    if (!req.files || !("testimonial_image" in req.files)) {
         return sendResponse(res, {
             success: false,
             statusCode: httpStatus.BAD_REQUEST,
-            message: 'Image and Icon are required',
+            message: 'Testimonial image are required',
         });
     }
 
 
     let image, image_key;
-    let icon, icon_key;
     try {
-        const tabImage = req.files["for_migrant_workers_tab_image"][0];
-        const tabIcon = req.files["for_migrant_workers_tab_icon"][0];
+        const testimonialImage = req.files["testimonial_image"][0];
 
-        const tabImageUpload = await FileUploadHelper.uploadToSpaces(tabImage);
+        const testimonialImageUpload = await FileUploadHelper.uploadToSpaces(testimonialImage);
 
-        if (tabImageUpload) {
-            image = tabImageUpload?.Location;
-            image_key = tabImageUpload?.Key;
+        if (testimonialImageUpload) {
+            image = testimonialImageUpload?.Location;
+            image_key = testimonialImageUpload?.Key;
         }
 
-        const tabIconUpload = await FileUploadHelper.uploadToSpaces(tabIcon);
-
-        if (tabIconUpload) {
-            icon = tabIconUpload.Location;
-            icon_key = tabIconUpload.Key;
-        }
 
         // Get the highest serial
-        const lastForMigrantWorkerSerial = await ForMigrantWorkerModel.findOne().sort({ for_migrant_workers_tab_serial: -1 });
+        const lastTestimonialSerial = await TestimonialModel.findOne().sort({ testimonial_serial: -1 });
 
         // Determine the new serial
-        const newForMigrantWorkerSerial = (lastForMigrantWorkerSerial?.for_migrant_workers_tab_serial ?? 0) + 1;
+        const newTestimonialSerial = (lastTestimonialSerial?.testimonial_serial ?? 0) + 1;
 
-        const { for_migrant_workers_tab_contents } = req.body;
-        console.log(for_migrant_workers_tab_contents, 'for_migrant_workers_tab_contents');
+       
 
-        const parsedContents = JSON.parse(for_migrant_workers_tab_contents);
+        const testimonialsData = { ...req.body, image, image_key, testimonial_serial: newTestimonialSerial };
 
-        const forMigrantWorkersData = { ...req.body, icon, icon_key, image, image_key, for_migrant_workers_tab_serial: newForMigrantWorkerSerial, for_migrant_workers_tab_contents: parsedContents };
-
-        const result = await ForMigrantWorkerServices.postForMigrantWorkerService(forMigrantWorkersData);
+        const result = await TestimonialServices.postTestimonialService(testimonialsData);
 
         return sendResponse(res, {
             success: true,
             statusCode: httpStatus.OK,
-            message: "For Migrant Worker info created successfully",
+            message: "Testimonial created successfully",
             data: result,
         });
     } catch (error) {
@@ -68,8 +58,8 @@ const postForMigrantWorker: RequestHandler = async (
     }
 };
 
-const getForMigrantWorker = catchAsync(async (req, res) => {
-    const result = await ForMigrantWorkerServices.getForMigrantWorkerService();
+const getTestimonial = catchAsync(async (req, res) => {
+    const result = await TestimonialServices.getTestimonialService();
 
     if (result.length === 0) {
         throw new AppError(404, "No data found");
@@ -84,7 +74,7 @@ const getForMigrantWorker = catchAsync(async (req, res) => {
 
 });
 
-const updateForMigrantWorker: RequestHandler = async (
+const updateTestimonial: RequestHandler = async (
     req: Request,
     res: Response,
     next: NextFunction
@@ -94,7 +84,7 @@ const updateForMigrantWorker: RequestHandler = async (
         const forMigrationWorkerId = requestData?._id;
 
         // ========== Update ==========
-        const result = await ForMigrantWorkerServices.updateForMigrantWorkerService(forMigrationWorkerId, requestData);
+        const result = await TestimonialServices.updateTestimonialService(forMigrationWorkerId, requestData);
 
 
         if (result) {
@@ -113,11 +103,11 @@ const updateForMigrantWorker: RequestHandler = async (
 };
 
 
-const deleteForMigrantWorker = catchAsync(async (req, res, next) => {
+const deleteTestimonial = catchAsync(async (req, res, next) => {
 
     try {
-        const forMigrantWorkerId = req.body._id
-        const result = await ForMigrantWorkerServices.deleteForMigrantWorkerService(forMigrantWorkerId);
+        const TestimonialId = req.body._id
+        const result = await TestimonialServices.deleteTestimonialService(TestimonialId);
         if (result) {
             if (req.body?.for_migrant_workers_tab_image_key) {
                 await FileUploadHelper.deleteFromSpaces(req.body?.for_migrant_workers_tab_image_key);
@@ -143,9 +133,9 @@ const deleteForMigrantWorker = catchAsync(async (req, res, next) => {
     });
 });
 
-export const ForMigrantWorkerController = {
-    postForMigrantWorker,
-    getForMigrantWorker,
-    updateForMigrantWorker,
-    deleteForMigrantWorker
+export const TestimonialController = {
+    postTestimonial,
+    getTestimonial,
+    updateTestimonial,
+    deleteTestimonial
 };

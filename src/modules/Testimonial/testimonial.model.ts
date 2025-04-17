@@ -8,6 +8,8 @@ const TestimonialSchema = new mongoose.Schema<ITestimonial>(
         testimonial_image_key: { type: String },
         testimonial_occupation: { type: String },
         testimonial_comment: { type: String },
+        testimonial_status: { type: String },
+        testimonial_serial: { type: Number },
         testimonial_rating: { type: Number },
     },
     {
