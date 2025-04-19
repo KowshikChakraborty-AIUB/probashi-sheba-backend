@@ -9,6 +9,7 @@ import { TestimonialRoutes } from '../modules/Testimonial/testimonial.route';
 import { WhoWeAreRoutes } from '../modules/WhoWeAre/whoWeAre.route';
 import { ChecklistRoutes } from '../modules/Checklist/checklist.route';
 import { MyDocumentRoutes } from '../modules/MyDocument/myDocument.route';
+import { BannerRoutes } from '../modules/Banner/banner.route';
 
 
 const router = Router();
@@ -53,6 +54,10 @@ const moduleRoutes = [
     {
         path: '/my-document',
         route: MyDocumentRoutes,
+    },
+    {
+        path: '/banner',
+        route: BannerRoutes,
     },
 ];
 

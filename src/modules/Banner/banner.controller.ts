@@ -1,32 +1,31 @@
 import { NextFunction, Request, Response } from 'express';
-import catchAsync from '../../../shared/catchAsync';
-import sendResponse from '../../../shared/sendResponse';
-
-import { StatusCodes } from 'http-status-codes';
-import { FileUploadHelper } from '../../middlewares/FileUploadHelper';
 import { BannerService } from './banner.service';
 import { BannerModel } from './banner.model';
 import * as fs from "fs";
-import ApiError from '../../../errors/ApiError';
 import { IBanner } from './banner.interface';
+import catchAsync from '../../utils/catchAsync';
+import AppError from '../../errors/AppError';
+import httpStatus from 'http-status';
+import { FileUploadHelper } from '../../helpers/FileUploadHelper';
+import sendResponse from '../../utils/sendResponse';
 
 
 const createBanner = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   try {
-    if (req.files && "banner_logo" in req.files && req.body) {
+    if (req.files && "banner_image" in req.files && req.body) {
       const requestData = req.body;
       const bannerTitle = requestData?.banner_title
       const findBannerNameExist = await BannerModel.exists({ bannerTitle });
 
       if (findBannerNameExist) {
-        if (req.files?.banner_logo?.[0]?.path) {
+        if (req.files?.banner_image?.[0]?.path) {
           try {
-            fs.unlinkSync(req.files.banner_logo[0].path);
+            fs.unlinkSync(req.files.banner_image[0].path);
           } catch (error) {
             console.error("Error deleting file:", error);
           }
         }
-        throw new ApiError(StatusCodes.BAD_REQUEST, 'This banner already exists!');
+        throw new AppError(httpStatus.BAD_REQUEST, 'This banner already exists!');
       }
 
       // Get the highest banner_serial
@@ -37,33 +36,33 @@ const createBanner = catchAsync(async (req: Request, res: Response, next: NextFu
 
 
       // get the brand image and upload
-      let banner_logo;
-      let banner_logo_key;
-      if (req.files && "banner_logo" in req.files) {
-        const bannerImage = req.files["banner_logo"][0];
-        const banner_logo_upload = await FileUploadHelper.uploadToSpaces(
+      let banner_image;
+      let banner_image_key;
+      if (req.files && "banner_image" in req.files) {
+        const bannerImage = req.files["banner_image"][0];
+        const banner_image_upload = await FileUploadHelper.uploadToSpaces(
           bannerImage
         );
-        banner_logo = banner_logo_upload?.Location;
-        banner_logo_key = banner_logo_upload?.Key;
+        banner_image = banner_image_upload?.Location;
+        banner_image_key = banner_image_upload?.Key;
       }
 
-      const data = { ...requestData, banner_logo, banner_logo_key, banner_serial: newBannerSerial };
+      const data = { ...requestData, banner_image, banner_image_key, banner_serial: newBannerSerial };
 
       const result = await BannerService.createBannerServices(data);
 
       if (result) {
         return sendResponse<IBanner>(res, {
           success: true,
-          statusCode: StatusCodes.OK,
+          statusCode: httpStatus.OK,
           message: "Banner Added Successfully !",
           data: result
         });
       } else {
-        throw new ApiError(400, "Banner Added Failed !");
+        throw new AppError(400, "Banner Added Failed !");
       }
     } else {
-      throw new ApiError(400, "Image Upload Failed");
+      throw new AppError(400, "Image Upload Failed");
     }
   } catch (error: any) {
     next(error);
@@ -79,7 +78,7 @@ const findBanners = catchAsync(async (req, res) => {
   if (!result || result.length === 0) {
     return sendResponse(res, {
       success: false,
-      statusCode: StatusCodes.NOT_FOUND,
+      statusCode: httpStatus.NOT_FOUND,
       message: 'No data found.',
       data: [],
     });
@@ -87,7 +86,7 @@ const findBanners = catchAsync(async (req, res) => {
 
   sendResponse(res, {
     success: true,
-    statusCode: StatusCodes.OK,
+    statusCode: httpStatus.OK,
     message: 'Banners retrieved successfully',
     data: result,
   });
@@ -101,7 +100,7 @@ const findAllDashboardBanners = catchAsync(async (req, res) => {
   if (!result || result.length === 0) {
     return sendResponse(res, {
       success: false,
-      statusCode: StatusCodes.NOT_FOUND,
+      statusCode: httpStatus.NOT_FOUND,
       message: 'No data found.',
       data: [],
     });
@@ -109,7 +108,7 @@ const findAllDashboardBanners = catchAsync(async (req, res) => {
 
   sendResponse(res, {
     success: true,
-    statusCode: StatusCodes.OK,
+    statusCode: httpStatus.OK,
     message: 'Dashboard banners retrieved successfully',
     data: result,
   });
@@ -117,33 +116,33 @@ const findAllDashboardBanners = catchAsync(async (req, res) => {
 
 const updateBanner = catchAsync(async (req, res, next) => {
   try {
-    if (req.files && "banner_logo" in req.files && req.body) {
+    if (req.files && "banner_image" in req.files && req.body) {
       const requestData = req.body;
 
       // const findBannerNameExist = await BannerModel.exists({ banner_title: requestData?.banner_title });
       // if (findBannerNameExist) {
-      //   if (req.files?.banner_logo?.[0]?.path) {
+      //   if (req.files?.banner_image?.[0]?.path) {
       //     try {
-      //       fs.unlinkSync(req.files.banner_logo[0].path);
+      //       fs.unlinkSync(req.files.banner_image[0].path);
       //     } catch (error) {
       //       console.error("Error deleting file:", error);
       //     }
       //   }
-      //   throw new ApiError(StatusCodes.BAD_REQUEST, 'This banner already exists!');
+      //   throw new AppError(httpStatus.BAD_REQUEST, 'This banner already exists!');
       // }
 
       // const findBrandSerialExist = await BannerModel.exists({
       //   banner_serial: requestData?.banner_serial,
       // });
       // if (findBrandSerialExist) {
-      //   if (req.files?.banner_logo?.[0]?.path) {
+      //   if (req.files?.banner_image?.[0]?.path) {
       //     try {
-      //       fs.unlinkSync(req.files.banner_logo[0].path);
+      //       fs.unlinkSync(req.files.banner_image[0].path);
       //     } catch (error) {
       //       console.error("Error deleting file:", error);
       //     }
       //   }
-      //   throw new ApiError(StatusCodes.BAD_REQUEST, 'Serial Number Previously Added!');
+      //   throw new AppError(httpStatus.BAD_REQUEST, 'Serial Number Previously Added!');
       // }
 
 
@@ -172,40 +171,40 @@ const updateBanner = catchAsync(async (req, res, next) => {
       await BannerModel.findByIdAndUpdate(requestData?._id, { banner_serial: requestData?.banner_serial });
 
       // get the brand image and upload
-      let banner_logo;
-      let banner_logo_key;
-      if (req.files && "banner_logo" in req.files) {
-        const bannerImage = req.files["banner_logo"][0];
-        const banner_logo_upload = await FileUploadHelper.uploadToSpaces(
+      let banner_image;
+      let banner_image_key;
+      if (req.files && "banner_image" in req.files) {
+        const bannerImage = req.files["banner_image"][0];
+        const banner_image_upload = await FileUploadHelper.uploadToSpaces(
           bannerImage
         );
-        banner_logo = banner_logo_upload?.Location;
-        banner_logo_key = banner_logo_upload?.Key;
+        banner_image = banner_image_upload?.Location;
+        banner_image_key = banner_image_upload?.Key;
       }
-      const data = { ...requestData, banner_logo, banner_logo_key };
+      const data = { ...requestData, banner_image, banner_image_key };
       const result: IBanner | any = await BannerService.updateBannerServices(data, requestData?._id
       );
 
       if (result) {
-        if (requestData?.banner_logo_key) {
+        if (requestData?.banner_image_key) {
           await FileUploadHelper.deleteFromSpaces(
-            requestData?.banner_logo_key
+            requestData?.banner_image_key
           );
         }
         return sendResponse<IBanner>(res, {
-          statusCode: StatusCodes.OK,
+          statusCode: httpStatus.OK,
           success: true,
           message: "Banner Update Successfully !",
         });
       } else {
-        throw new ApiError(StatusCodes.BAD_REQUEST, "Banner Update Failed !");
+        throw new AppError(httpStatus.BAD_REQUEST, "Banner Update Failed !");
       }
     } else {
       const requestData = req.body;
 
       // const findBannerNameExist = await BannerModel.exists({ banner_title: requestData?.banner_title });
       // if (findBannerNameExist && requestData?._id !== findBannerNameExist?._id.toString()) {
-      //   throw new ApiError(StatusCodes.BAD_REQUEST, 'Already added!');
+      //   throw new AppError(httpStatus.BAD_REQUEST, 'Already added!');
       // }
 
 
@@ -234,12 +233,12 @@ const updateBanner = catchAsync(async (req, res, next) => {
       );
       if (result) { // ✅ Check if result is not null
         return sendResponse<IBanner>(res, {
-          statusCode: StatusCodes.OK,
+          statusCode: httpStatus.OK,
           success: true,
           message: "Banner Updated Successfully !",
         });
       } else {
-        throw new ApiError(400, "Banner Updated Failed !");
+        throw new AppError(400, "Banner Updated Failed !");
       }
 
     }
@@ -253,16 +252,16 @@ const deleteBannerInfo = catchAsync(async (req, res, next) => {
     const banner_id = req.body._id
     const result = await BannerService.deleteBannerServices(banner_id);
     if (result) {
-      if (req.body?.banner_logo_key) {
-        await FileUploadHelper.deleteFromSpaces(req.body?.banner_logo_key);
+      if (req.body?.banner_image_key) {
+        await FileUploadHelper.deleteFromSpaces(req.body?.banner_image_key);
       }
       return sendResponse(res, {
-        statusCode: StatusCodes.OK,
+        statusCode: httpStatus.OK,
         success: true,
         message: "Banner deleted successfully !",
       });
     } else {
-      throw new ApiError(400, "Banner delete failed !");
+      throw new AppError(400, "Banner delete failed !");
     }
   } catch (error: any) {
     next(error);

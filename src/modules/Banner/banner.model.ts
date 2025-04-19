@@ -31,7 +31,7 @@ const BannerSchema = new mongoose.Schema<IBanner>(
     },
     banner_path: {
       type: String,
-      required: true,
+      // required: true,
     },
     banner_applestore_path: {
       type: String,

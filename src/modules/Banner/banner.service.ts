@@ -1,15 +1,15 @@
-import { StatusCodes } from 'http-status-codes';
-import ApiError from '../../../errors/ApiError';
+import httpStatus from 'http-status';
 import { IBanner } from './banner.interface';
 import { BannerModel } from './banner.model';
 import QueryBuilder from '../../builder/QueryBuilder';
+import AppError from '../../errors/AppError';
 
 
 // Create Banners
 const createBannerServices = async (banner: IBanner) => {
-  const isBannerExists = await BannerModel.findOne({ name: banner.banner_title })
+  const isBannerExists = await BannerModel.findOne({ name: banner.banner_title_english })
   if (isBannerExists) {
-    throw new ApiError(StatusCodes.CONFLICT, 'This banner is already exists!');
+    throw new AppError(httpStatus.CONFLICT, 'This banner is already exists!');
   }
   const result = await BannerModel.create(banner)
   return result
@@ -20,7 +20,7 @@ const findBannersServices = async (queryParams: Record<string, unknown>) => {
   const modelQuery = BannerModel.find({ banner_status: "active" }).sort({banner_serial: 1}) // Initial Mongoose query
 
   const query = new QueryBuilder(modelQuery, queryParams)
-    .search(['banner_title']) // Provide searchable fields
+    .search(['banner_title_english']) // Provide searchable fields
     // .filter()
     .sort()
     .paginate()
@@ -36,7 +36,7 @@ export const findAllDashboardBannerServices = async (queryParams: Record<string,
   const modelQuery = BannerModel.find().sort({ banner_serial: 1 });
 
   const query = new QueryBuilder(modelQuery, queryParams)
-    .search(['banner_title']) // Provide searchable fields
+    .search(['banner_title_english']) // Provide searchable fields
     // .filter()
     .sort()
     .paginate()
