@@ -13,9 +13,19 @@ const ChecklistSchema = new mongoose.Schema<IChecklist>(
             default: '',
             trim: true,
         },
-        checklist_isCompleted: {
-            type: Boolean,
-            default: false,
+        checklist_status: {
+            type: String,
+            enum: ['next', 'completed', 'upcoming'],
+            default: 'next',
+        },
+        checklist_index_group: {
+            type: Number,
+            required: true,
+        },
+        checklist_origin: {
+            type: String,
+            // enum: ['next', 'upcoming'],
+            default: 'next',
         },
     },
     {
