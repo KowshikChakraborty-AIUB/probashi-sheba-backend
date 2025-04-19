@@ -81,10 +81,10 @@ const updateTestimonial: RequestHandler = async (
 ): Promise<any> => {
     try {
         const requestData = req.body;
-        const forMigrationWorkerId = requestData?._id;
+        const testimonialId = requestData?._id;
 
         // ========== Update ==========
-        const result = await TestimonialServices.updateTestimonialService(forMigrationWorkerId, requestData);
+        const result = await TestimonialServices.updateTestimonialService(testimonialId, requestData);
 
 
         if (result) {
