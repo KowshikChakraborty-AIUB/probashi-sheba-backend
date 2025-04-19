@@ -8,6 +8,7 @@ import { ForMigrantWorkerRoutes } from '../modules/ForMigrantWorker/ForMigrantWo
 import { TestimonialRoutes } from '../modules/Testimonial/testimonial.route';
 import { WhoWeAreRoutes } from '../modules/WhoWeAre/whoWeAre.route';
 import { ChecklistRoutes } from '../modules/Checklist/checklist.route';
+import { MyDocumentRoutes } from '../modules/MyDocument/myDocument.route';
 
 
 const router = Router();
@@ -48,6 +49,10 @@ const moduleRoutes = [
     {
         path: '/checklist',
         route: ChecklistRoutes,
+    },
+    {
+        path: '/my-document',
+        route: MyDocumentRoutes,
     },
 ];
 

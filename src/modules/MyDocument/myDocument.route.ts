@@ -4,7 +4,7 @@ import { MyDocumentController } from "./myDocument.controller";
 
 const router = express.Router();
 
-// Create, Update, Get Testimonial
+// Create, Update, Get MyDocument
 router
     .route("/")
     .get(MyDocumentController.getMyDocument)
@@ -22,4 +22,4 @@ router
     )
     .delete(MyDocumentController.deleteMyDocument);
 
-export const TestimonialRoutes = router;
+export const MyDocumentRoutes = router;

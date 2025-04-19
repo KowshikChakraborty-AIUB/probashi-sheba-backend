@@ -22,19 +22,19 @@ const postMyDocument: RequestHandler = async (
     }
 
 
-    let image, image_key;
+    let document_image, document_image_key;
     try {
         const myDocumentImage = req.files["document_image"][0];
 
         const myDocumentImageUpload = await FileUploadHelper.uploadToSpaces(myDocumentImage);
 
         if (myDocumentImageUpload) {
-            image = myDocumentImageUpload?.Location;
-            image_key = myDocumentImageUpload?.Key;
+            document_image = myDocumentImageUpload?.Location;
+            document_image_key = myDocumentImageUpload?.Key;
         }
 
 
-        const myDocumentsData = { ...req.body, image, image_key };
+        const myDocumentsData = { ...req.body, document_image, document_image_key };
 
         const result = await MyDocumentServices.postMyDocumentService(myDocumentsData);
 
