@@ -483,7 +483,10 @@ const changePasswordServices = async (user: JwtPayload, payload: IChangePassword
 }
 
 // User delete own account
-const deleteUserOwnAccountServices = async (userId: string, payload: any) => {
+const deleteUserOwnAccountServices = async (userId: string, delete_confirmation: string) => {
+  if (delete_confirmation !== "DELETE") {
+    throw new AppError(httpStatus.BAD_REQUEST, "Please provide 'delete' to confirm account deletion.");
+  }
   const user = await userModel.findById(userId);
 
   if (!user) throw new AppError(
