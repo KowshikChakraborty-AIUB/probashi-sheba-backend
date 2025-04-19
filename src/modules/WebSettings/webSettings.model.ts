@@ -44,8 +44,7 @@ const WebSettingsSchema = new mongoose.Schema<IWebSettings>(
         welcome_message: { type: String },
         about: { type: String },
         privacy_policy: { type: String },
-        terms: { type: String },
-        who_we_are: WhoWeAreSchema,
+        terms: { type: String }
     },
     {
         timestamps: true,
