@@ -87,7 +87,7 @@ const findKeyImpacts = catchAsync(async (req, res) => {
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
-    message: 'KeyImpactss retrieved successfully',
+    message: 'KeyImpacts retrieved successfully',
     data: result,
   });
 });
