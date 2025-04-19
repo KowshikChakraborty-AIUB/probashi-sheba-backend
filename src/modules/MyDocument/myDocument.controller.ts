@@ -75,6 +75,21 @@ const updateMyDocument: RequestHandler = async (
         const requestData = req.body;
         const forMigrationWorkerId = requestData?._id;
 
+        const existingData = await MyDocumentModel.findById(forMigrationWorkerId);
+        if (!existingData) throw new AppError(404, "Document not found");
+
+           // ========== Passport Upload ==========
+    if (req.files && "document_image" in req.files) {
+        const documentImg = req.files["document_image"][0];
+        const uploaded = await FileUploadHelper.uploadToSpaces(documentImg);
+        requestData.document_image = uploaded?.Location;
+        requestData.document_image_key = uploaded?.Key;
+  
+        if (existingData.document_image_key) {
+          await FileUploadHelper.deleteFromSpaces(existingData.document_image_key);
+        }
+      }
+
         // ========== Update ==========
         const result = await MyDocumentServices.updateMyDocumentService(forMigrationWorkerId, requestData);
 

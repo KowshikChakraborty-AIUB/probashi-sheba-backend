@@ -40,6 +40,7 @@ export interface IUserDocument extends Document {
     social_email?: string;
 
     role: "user" | "admin";
+    scheduledForDeletionAt: Date | null; // ✅ for soft delete
 }
 
 const UserSchema: Schema = new Schema<IUserDocument>(
@@ -105,6 +106,10 @@ const UserSchema: Schema = new Schema<IUserDocument>(
             type: String,
             enum: ["user", "admin"],
             default: "user"
+        },
+        scheduledForDeletionAt: {
+            type: Date,
+            default: null,
         },
     },
     {

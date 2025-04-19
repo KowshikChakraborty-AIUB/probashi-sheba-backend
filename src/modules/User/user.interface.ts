@@ -42,4 +42,10 @@ export interface IUserInterface {
     social_email?: string; // ✅ optional, often provided by social login
 
     role?: "user" | "admin";
+
+    scheduledForDeletionAt: Date | null; // ✅ for soft delete
 }
+
+export type TUserRole = "user" | "admin";
+export type TUserStatus = "active" | "in-active";
+
