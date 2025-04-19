@@ -1,6 +1,7 @@
 import express from 'express';
 import { UserControllers } from './user.controller';
 import { FileUploadHelper } from '../../helpers/FileUploadHelper';
+import { auth } from '../../middlewares/auth';
 
 
 const router = express.Router();
@@ -23,5 +24,9 @@ router.patch('/profile', FileUploadHelper.ImageUpload.fields([
 
 router.post('/forgot-password', UserControllers.forgotPassword);
 router.post('/reset-password', UserControllers.resetPassword);
+
+router.post('/change-password',
+    auth('user'),
+    UserControllers.changePassword);
 
 export const UserRoutes = router;

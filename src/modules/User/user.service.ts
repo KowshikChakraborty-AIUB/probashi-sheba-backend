@@ -9,6 +9,7 @@ import { emailHelper } from "../../helpers/emailHelper";
 import { IUserInterface } from "./user.interface";
 import { customAlphabet } from 'nanoid';
 import { SendPhoneOTP } from "../../middlewares/sendPhoneOTP";
+import { log } from "console";
 
 
 // Send phone otp
@@ -200,7 +201,7 @@ const loginServices = async (payload: IUserInterface): Promise<{
   user?: IUserDocument;
   newUser?: IUserDocument;
 }> => {
-  const { user_phone, user_password, user_email, login_type, social_id, device_id } = payload;
+  const { user_phone, user_password, user_email, login_type, social_id, device_id, role } = payload;
 
   // If login type is phone
   if (login_type === "phone") {
@@ -239,7 +240,11 @@ const loginServices = async (payload: IUserInterface): Promise<{
 
     //create token
     const accessToken = createToken(
-      { _id: isExistUser._id as string, user_phone: isExistUser.user_phone },
+      {
+        _id: isExistUser._id as string,
+        user_phone: isExistUser.user_phone,
+        role: isExistUser.role,
+      },
       config.jwt_access_secret as string,
       '7d'
     );
@@ -284,7 +289,7 @@ const loginServices = async (payload: IUserInterface): Promise<{
 
     //create token
     const accessToken = createToken(
-      { _id: isExistUser._id as string, user_email: isExistUser.user_email },
+      { _id: isExistUser._id as string, user_email: isExistUser.user_email, role: isExistUser.role, },
       config.jwt_access_secret as string,
       '7d'
     );
@@ -336,7 +341,7 @@ const loginServices = async (payload: IUserInterface): Promise<{
 
     //create token
     const accessToken = createToken(
-      { _id: existingUser._id as string, user_email: existingUser.user_email },
+      { _id: existingUser._id as string, user_email: existingUser.user_email, role: existingUser.role, },
       config.jwt_access_secret as string,
       '7d'
     );
@@ -430,6 +435,45 @@ const resetPasswordServices = async (user_phone: string, new_password: string, c
 }
 
 
+// Change password
+const changePasswordServices = async (user: any, payload: any) => {
+  const { current_password, new_password, confirm_password } = payload;
+  const isExistUser = await userModel.findById(user._id).select('+password');
+  if (!isExistUser) {
+    throw new AppError(httpStatus.BAD_REQUEST, "User doesn't exist!");
+  }
+
+  //check match password
+  if (
+    current_password &&
+    !(await comparePassword(current_password, isExistUser.user_password))
+  ) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Password is incorrect!');
+  }
+
+  //newPassword and current password
+  if (current_password === new_password) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'Please give different password from current password'
+    );
+  }
+
+  //check password
+  if (new_password !== confirm_password) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "New password and Confirm password doesn't match!"
+    );
+  }
+
+  const updateData = {
+    user_password: await hashPassword(new_password),
+  };
+  const result = await userModel.findOneAndUpdate({ _id: user._id }, updateData, { new: true });
+  console.log("Result", result);
+  return result;
+}
 
 
 
@@ -508,5 +552,6 @@ export const UserServices = {
   verifyEmailOtpServices,
   updateUserServices,
   forgotPasswordServices,
-  resetPasswordServices
+  resetPasswordServices,
+  changePasswordServices
 };  

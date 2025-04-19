@@ -173,6 +173,19 @@ const resetPassword = catchAsync(async (req, res) => {
     });
 });
 
+const changePassword = catchAsync(async (req, res) => {
+    const user = req.user;
+    const { ...passwordData } = req.body;
+    log("Change Password Controller", passwordData, user);
+    await UserServices.changePasswordServices(user, passwordData);
+  
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: 'Password changed successfully',
+    });
+  });
+
 export const UserControllers = {
     sendPhoneOtp,
     sendEmailOtp,
@@ -182,5 +195,6 @@ export const UserControllers = {
     login,
     updateUser,
     forgotPassword,
-    resetPassword
+    resetPassword,
+    changePassword,
 };  

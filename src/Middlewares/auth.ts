@@ -4,12 +4,12 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 import config from '../config';
 import { TUserRole } from '../modules/User/user.interface';
 import catchAsync from '../utils/catchAsync';
-import { User } from '../modules/User/user.model';
+import userModel from '../modules/User/user.model';
 
 
 export const auth = (...requiredRole: TUserRole[]) => {
 
-    return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    return catchAsync(async (req, res, next) => {
         // const token = req.headers.authorization;
         const token = req.headers.authorization?.split(' ')[1];
 
@@ -26,13 +26,11 @@ export const auth = (...requiredRole: TUserRole[]) => {
             config.jwt_access_secret as string,
         ) as JwtPayload;
 
-        const { role, email } = decoded;
+        const { role, user_email, user_phone } = decoded;
 
-        // console.log(decoded, 'decoded');
+        const userData = await userModel.findOne({ user_email, user_phone });
 
-        const userData = await User.findOne({ email });
 
-        // console.log(userData, 'userData');
         if (!userData) {
             return res.status(httpStatus.UNAUTHORIZED).json({
                 success: false,
@@ -40,7 +38,9 @@ export const auth = (...requiredRole: TUserRole[]) => {
                 message: 'You have no access to this route',
             });
         }
-
+        console.log(requiredRole, 'requiredRole');
+        console.log(role, 'role');
+        console.log(requiredRole.includes(role), 'requiredRole.includes(role)');
         if (requiredRole && !requiredRole.includes(role)) {
             return res.status(httpStatus.UNAUTHORIZED).json({
                 success: false,

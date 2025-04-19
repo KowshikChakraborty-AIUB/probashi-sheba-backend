@@ -43,3 +43,6 @@ export interface IUserInterface {
 
     role?: "user" | "admin";
 }
+
+export type TUserRole = "user" | "admin";
+export type TUserStatus = "active" | "in-active";
