@@ -11,6 +11,7 @@ import { ChecklistRoutes } from '../modules/Checklist/checklist.route';
 import { MyDocumentRoutes } from '../modules/MyDocument/myDocument.route';
 import { BannerRoutes } from '../modules/Banner/banner.route';
 import { KeyImpactsRoutes } from '../modules/KeyImpacts/keyImpacts.route';
+import { FaqRoutes } from '../modules/Faq/faq.route';
 
 
 const router = Router();
@@ -63,6 +64,10 @@ const moduleRoutes = [
     {
         path: '/key-impacts',
         route: KeyImpactsRoutes,
+    },
+    {
+        path: '/faq',
+        route: FaqRoutes,
     },
 ];
 
