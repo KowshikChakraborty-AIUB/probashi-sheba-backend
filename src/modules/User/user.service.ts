@@ -9,7 +9,8 @@ import { emailHelper } from "../../helpers/emailHelper";
 import { IUserInterface } from "./user.interface";
 import { customAlphabet } from 'nanoid';
 import { SendPhoneOTP } from "../../middlewares/sendPhoneOTP";
-import { log } from "console";
+import { JwtPayload } from "jsonwebtoken";
+import { IChangePassword } from "../../types/auth";
 
 
 // Send phone otp
@@ -230,6 +231,13 @@ const loginServices = async (payload: IUserInterface): Promise<{
       );
     }
 
+    // Undo account deletion if it was scheduled
+    if (isExistUser.scheduledForDeletionAt) {
+      // Cancel deletion
+      isExistUser.scheduledForDeletionAt = null;
+      await isExistUser.save();
+    }
+
     //check match password
     if (
       user_password &&
@@ -434,9 +442,8 @@ const resetPasswordServices = async (user_phone: string, new_password: string, c
   return existingUser;
 }
 
-
 // Change password
-const changePasswordServices = async (user: any, payload: any) => {
+const changePasswordServices = async (user: JwtPayload, payload: IChangePassword) => {
   const { current_password, new_password, confirm_password } = payload;
   const isExistUser = await userModel.findById(user._id).select('+password');
   if (!isExistUser) {
@@ -471,10 +478,22 @@ const changePasswordServices = async (user: any, payload: any) => {
     user_password: await hashPassword(new_password),
   };
   const result = await userModel.findOneAndUpdate({ _id: user._id }, updateData, { new: true });
-  console.log("Result", result);
+
   return result;
 }
 
+// User delete own account
+const deleteUserOwnAccountServices = async (userId: string, payload: any) => {
+  const user = await userModel.findById(userId);
+
+  if (!user) throw new AppError(
+    httpStatus.NOT_FOUND,
+    "User not found"
+  );
+
+  user.scheduledForDeletionAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days from now
+  await user.save();
+}
 
 
 
@@ -553,5 +572,6 @@ export const UserServices = {
   updateUserServices,
   forgotPasswordServices,
   resetPasswordServices,
-  changePasswordServices
+  changePasswordServices,
+  deleteUserOwnAccountServices
 };  

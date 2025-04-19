@@ -178,13 +178,26 @@ const changePassword = catchAsync(async (req, res) => {
     const { ...passwordData } = req.body;
     log("Change Password Controller", passwordData, user);
     await UserServices.changePasswordServices(user, passwordData);
-  
+
     sendResponse(res, {
-      success: true,
-      statusCode: httpStatus.OK,
-      message: 'Password changed successfully',
+        success: true,
+        statusCode: httpStatus.OK,
+        message: 'Password changed successfully',
     });
-  });
+});
+
+const deleteUserOwnAccount = catchAsync(async (req, res) => {
+    const userId = req.user._id;
+
+    await UserServices.deleteUserOwnAccountServices(userId, req.body);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: 'Account scheduled for deletion in 30 days.',
+    });
+});
+
 
 export const UserControllers = {
     sendPhoneOtp,
@@ -197,4 +210,5 @@ export const UserControllers = {
     forgotPassword,
     resetPassword,
     changePassword,
+    deleteUserOwnAccount
 };  

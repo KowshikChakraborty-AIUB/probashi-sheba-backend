@@ -29,4 +29,8 @@ router.post('/change-password',
     auth('user'),
     UserControllers.changePassword);
 
+router.post('/delete-account',
+    auth('user'),
+    UserControllers.deleteUserOwnAccount);
+
 export const UserRoutes = router;
