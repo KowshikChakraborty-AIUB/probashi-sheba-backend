@@ -51,7 +51,7 @@ const updateChecklist: RequestHandler = async (
         // ========== Update ==========
         const result = await ChecklistServices.updateChecklistService(checklistId, requestData);
 
-
+ 
         if (result) {
             return sendResponse(res, {
                 statusCode: httpStatus.OK,
