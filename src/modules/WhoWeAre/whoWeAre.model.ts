@@ -14,8 +14,12 @@ const WhoWeAreItemSchema = new mongoose.Schema(
 const WhoWeAreSchema = new Schema<IWhoWeAre>(
     {
         _id: { type: Types.ObjectId },
-        who_we_are_title: { type: String },
-        who_we_are_description: { type: String },
+        who_we_are_title_english: { type: String },
+        who_we_are_title_bangla: { type: String },
+        who_we_are_description_english: { type: String },
+        who_we_are_description_bangla: { type: String },
+        who_we_are_image: { type: String },
+        who_we_are_image_key: { type: String },
         who_we_are_services: WhoWeAreItemSchema,
         who_we_are_migrants: WhoWeAreItemSchema,
         who_we_are_saved: WhoWeAreItemSchema,
@@ -27,4 +31,4 @@ const WhoWeAreSchema = new Schema<IWhoWeAre>(
     }
 );
 
-export const ForMigrantWorkerModel = model<IWhoWeAre>('forMigrantWorkers', WhoWeAreSchema);
+export const WhoWeAreModel = model<IWhoWeAre>('whoWeAres', WhoWeAreSchema);
