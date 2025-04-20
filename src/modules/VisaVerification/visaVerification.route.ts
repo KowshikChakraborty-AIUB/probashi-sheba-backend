@@ -1,17 +1,26 @@
 import express from "express";
 import { FileUploadHelper } from "../../helpers/FileUploadHelper";
-import { FaqController } from "./visaVerification.controller";
+import { VisaVerificationController } from "./visaVerification.controller";
+
 
 const router = express.Router();
 
-// Create, Update, Get Faq
+// Create, Update, Get Testimonial
 router
     .route("/")
-    .get(FaqController.getFaq)
-    .post(FaqController.postFaq
+    .get(VisaVerificationController.getVisaVerification)
+    .post(
+        FileUploadHelper.ImageUpload.fields([
+            { name: "visaVerification_country_image", maxCount: 1 },
+        ]),
+        VisaVerificationController.postVisaVerification
     )
-    .patch(FaqController.updateFaq
+    .patch(
+        FileUploadHelper.ImageUpload.fields([
+            { name: "visaVerification_country_image", maxCount: 1 },
+        ]),
+        VisaVerificationController.updateVisaVerification
     )
-    .delete(FaqController.deleteFaq);
+    .delete(VisaVerificationController.deleteVisaVerification);
 
-export const FaqRoutes = router;
+export const VisaVerificationRoutes = router;

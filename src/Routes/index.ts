@@ -12,6 +12,7 @@ import { MyDocumentRoutes } from '../modules/MyDocument/myDocument.route';
 import { BannerRoutes } from '../modules/Banner/banner.route';
 import { KeyImpactsRoutes } from '../modules/KeyImpacts/keyImpacts.route';
 import { FaqRoutes } from '../modules/Faq/faq.route';
+import { VisaVerificationRoutes } from '../modules/VisaVerification/visaVerification.route';
 
 
 const router = Router();
@@ -68,6 +69,10 @@ const moduleRoutes = [
     {
         path: '/faq',
         route: FaqRoutes,
+    },
+    {
+        path: '/visa-verification',
+        route: VisaVerificationRoutes,
     },
 ];
 
