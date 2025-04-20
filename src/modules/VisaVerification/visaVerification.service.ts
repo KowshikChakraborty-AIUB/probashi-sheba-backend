@@ -1,65 +1,71 @@
 import AppError from "../../errors/AppError";
 import statusCodes from 'http-status';
-import { FaqModel } from "./visaVerification.model";
-import { IFaq } from "./visaVerification.interface";
+import { IVisaVerification } from "./visaVerification.interface";
+import { VisaVerificationModel } from "./visaVerification.model";
 
-// Create Faq
-const postFaqService = async (
-    payload: IFaq
-): Promise<IFaq> => {
+const escapeRegExp = (string: string) => {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // escape special chars
+};
 
-    const existingFaq = await FaqModel.findOne({
+
+// Create VisaVerification
+const postVisaVerificationService = async (
+    payload: IVisaVerification
+): Promise<IVisaVerification> => {
+    console.log(payload, 'payload from service');
+
+    const existingVisaVerification = await VisaVerificationModel.findOne({
         $or: [
-            { faq_question_english: new RegExp(`^${payload.faq_question_english}$`, 'i') },
-            { faq_question_bangla: new RegExp(`^${payload.faq_question_bangla}$`, 'i') }
+            { visaVerification_country_name_english: payload.visaVerification_country_name_english },
+            { visaVerification_country_name_bangla: payload.visaVerification_country_name_bangla }
         ]
-    });
+    }).collation({ locale: 'en', strength: 2 }); // strength: 2 → case insensitive
 
 
-    if (existingFaq) {
-        throw new AppError(statusCodes.BAD_REQUEST, 'You already added this faq!');
+    if (existingVisaVerification) {
+        throw new AppError(statusCodes.BAD_REQUEST, 'You already added this visa verification info!');
     }
 
 
-    const result = await FaqModel.create(payload);
+    const result = await VisaVerificationModel.create(payload);
     return result;
 };
 
 
-//get Faq info
-const getFaqService = async () => {
-    const result = await FaqModel.find();
+//get VisaVerification info
+const getVisaVerificationService = async () => {
+    const result = await VisaVerificationModel.find();
     return result;
 };
 
-// update Faq info
-const updateFaqService = async (
-    FaqId: string,
-    payload: Partial<IFaq>
+// update VisaVerification info
+const updateVisaVerificationService = async (
+    VisaVerificationId: string,
+    payload: Partial<IVisaVerification>
 ): Promise<any> => {
-    const result = await FaqModel.findByIdAndUpdate({ _id: FaqId }, payload, {
+    const result = await VisaVerificationModel.findByIdAndUpdate({ _id: VisaVerificationId }, payload, {
         new: true, // returns the updated doc
         runValidators: true,
     });
     return result;
 };
 
-// delete Faq info
-export const deleteFaqService = async (_id: string): Promise<IFaq | any> => {
+// delete VisaVerification info
+export const deleteVisaVerificationService = async (_id: string): Promise<IVisaVerification | any> => {
 
-    const FaqInfo = await FaqModel.findById({ _id: _id });
+    const VisaVerificationInfo = await VisaVerificationModel.findById({ _id: _id });
 
-    if (!FaqInfo) {
+    if (!VisaVerificationInfo) {
         return {};
     }
-    const result = await FaqModel.findByIdAndDelete({ _id: _id }
+    const result = await VisaVerificationModel.findByIdAndDelete({ _id: _id }
     );
     return result;
 };
 
-export const FaqServices = {
-    postFaqService,
-    getFaqService,
-    updateFaqService,
-    deleteFaqService
+export const VisaVerificationServices = {
+    postVisaVerificationService,
+    getVisaVerificationService,
+    updateVisaVerificationService,
+    deleteVisaVerificationService
 };
