@@ -7,7 +7,7 @@ const router = express.Router();
 // Create, Update, Get ForMigrantWorker
 router
     .route("/")
-    // .get(ForMigrantWorkerController.getForMigrantWorker)
+    .get(WhoWeAreController.getWhoWeAre)
     .post(
         // FileUploadHelper.ImageUpload.fields([
         //     { name: "who_we_are_image", maxCount: 1 },

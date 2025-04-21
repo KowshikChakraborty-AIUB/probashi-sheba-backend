@@ -15,6 +15,14 @@ const postWhoWeAreServices = async (payload: IWhoWeAre): Promise<IWhoWeAre> => {
     return result;
 };
 
+//get Faq info
+const getWhoWeAreService = async () => {
+    const result = await WhoWeAreModel.find();
+    return result;
+};
+
+
 export const WhoWeAreService = {
     postWhoWeAreServices,
+    getWhoWeAreService,
 };
