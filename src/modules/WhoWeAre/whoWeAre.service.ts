@@ -23,10 +23,14 @@ const getWhoWeAreService = async () => {
 
 // update WhoWeAre info
 const updateWhoWeAreService = async (payload: Partial<IWhoWeAre>): Promise<any> => {
+    console.log(payload, 'payload from who we are service update');
+
     const result = await WhoWeAreModel.findOneAndUpdate({}, payload, {
         new: true, // returns the updated doc
         runValidators: true,
     });
+    console.log(result, 'from who we are service update');
+
     return result;
 };
 

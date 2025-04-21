@@ -182,10 +182,30 @@ const updateWhoWeAre: RequestHandler = async (
     try {
         const requestData = req.body;
         
+        // Restructure the data to match the schema
+        const updateData: Partial<IWhoWeAre> = {
+            ...requestData
+        };
+
+        // Handle services update if any services fields are present
+        if (requestData.who_we_are_services_title_english || 
+            requestData.who_we_are_services_title_bangla ||
+            requestData.who_we_are_services_unit_english ||
+            requestData.who_we_are_services_unit_bangla) {
+            
+            updateData.who_we_are_services = {
+                ...updateData.who_we_are_services,
+                who_we_are_item_title_english: requestData.who_we_are_services_title_english,
+                who_we_are_item_title_bangla: requestData.who_we_are_services_title_bangla,
+                who_we_are_item_unit_english: requestData.who_we_are_services_unit_english 
+                    ? Number(requestData.who_we_are_services_unit_english)
+                    : undefined,
+                who_we_are_item_unit_bangla: requestData.who_we_are_services_unit_bangla
+            };
+        }
 
         // ========== Update ==========
-        const result = await WhoWeAreService.updateWhoWeAreService(requestData);
-
+        const result = await WhoWeAreService.updateWhoWeAreService(updateData);
 
         if (result) {
             return sendResponse(res, {
@@ -201,7 +221,6 @@ const updateWhoWeAre: RequestHandler = async (
         next(error);
     }
 };
-
 
 export const WhoWeAreController = {
     postWhoWeAre,
