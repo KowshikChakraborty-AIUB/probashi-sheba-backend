@@ -18,7 +18,7 @@ const postWhoWeAreServices = async (payload: IWhoWeAre): Promise<IWhoWeAre> => {
 //get Faq info
 const getWhoWeAreService = async () => {
     const result = await WhoWeAreModel.find();
-    return result;
+    return result[0];
 };
 
 
