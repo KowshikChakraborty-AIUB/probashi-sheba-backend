@@ -7,7 +7,7 @@ const router = express.Router();
 // Create, Update, Get ForMigrantWorker
 router
     .route("/")
-    // .get(ForMigrantWorkerController.getForMigrantWorker)
+    .get(WhoWeAreController.getWhoWeAre)
     .post(
         // FileUploadHelper.ImageUpload.fields([
         //     { name: "who_we_are_image", maxCount: 1 },
@@ -24,13 +24,18 @@ router
         ]),
         WhoWeAreController.postWhoWeAre
     )
-// .patch(
-//     FileUploadHelper.ImageUpload.fields([
-//         { name: "for_migrant_workers_tab_image", maxCount: 1 },
-//         { name: "for_migrant_workers_tab_icon", maxCount: 1 }
-//     ]),
-//     ForMigrantWorkerController.updateForMigrantWorker
-// )
+    .patch(
+        FileUploadHelper.ImageUpload.fields([
+            { name: "who_we_are_image", maxCount: 1 },
+            { name: "who_we_are_services_image", maxCount: 1 },
+            { name: "who_we_are_migrants_image", maxCount: 1 },
+            { name: "who_we_are_saved_image", maxCount: 1 },
+            { name: "who_we_are_days_image", maxCount: 1 },
+            { name: "who_we_are_employees_image", maxCount: 1 },
+            { name: "who_we_are_additional_images", maxCount: 5 },
+        ]),
+        WhoWeAreController.updateWhoWeAre
+    )
 // .delete(ForMigrantWorkerController.deleteForMigrantWorker);
 
 export const WhoWeAreRoutes = router;

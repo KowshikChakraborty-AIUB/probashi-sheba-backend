@@ -5,6 +5,7 @@ import { WhoWeAreService } from "./whoWeAre.service";
 import httpStatus from 'http-status';
 import { FileUploadHelper } from "../../helpers/FileUploadHelper";
 import { IWhoWeAre } from "./whoWeAre.interface";
+import AppError from "../../errors/AppError";
 
 const postWhoWeAre: RequestHandler = async (
     req: Request,
@@ -157,6 +158,53 @@ const postWhoWeAre: RequestHandler = async (
     }
 };
 
+const getWhoWeAre = catchAsync(async (req, res) => {
+    const result = await WhoWeAreService.getWhoWeAreService();
+
+    if (!result) {
+        throw new AppError(404, "No data found");
+    }
+
+    sendResponse(res, {
+        success: true,
+        statusCode: 200,
+        message: 'About info retrieved successfully',
+        data: result,
+    });
+
+});
+
+const updateWhoWeAre: RequestHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<any> => {
+    try {
+        const requestData = req.body;
+        
+
+        // ========== Update ==========
+        const result = await WhoWeAreService.updateWhoWeAreService(requestData);
+
+
+        if (result) {
+            return sendResponse(res, {
+                statusCode: httpStatus.OK,
+                success: true,
+                message: "About info Updated Successfully!",
+                data: result
+            });
+        } else {
+            throw new AppError(400, "About info Update Failed!");
+        }
+    } catch (error) {
+        next(error);
+    }
+};
+
+
 export const WhoWeAreController = {
     postWhoWeAre,
+    getWhoWeAre,
+    updateWhoWeAre,
 };
