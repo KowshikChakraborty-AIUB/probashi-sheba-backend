@@ -20,6 +20,7 @@ router
             { name: "who_we_are_saved_image", maxCount: 1 },
             { name: "who_we_are_days_image", maxCount: 1 },
             { name: "who_we_are_employees_image", maxCount: 1 },
+            { name: "who_we_are_additional_images", maxCount: 5 },
         ]),
         WhoWeAreController.postWhoWeAre
     )

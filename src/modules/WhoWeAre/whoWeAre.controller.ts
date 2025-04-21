@@ -72,14 +72,32 @@ const postWhoWeAre: RequestHandler = async (
         // const employees_image = employeesImageUpload?.Location;
         // const employees_image_key = employeesImageUpload?.Key;
 
+        // Array to store additional_images URLs and keys
+        const additional_images = [];
+
+        // Handle additional_images
+        const additionalImageFiles = files?.who_we_are_additional_images; // It's an array
+        if (additionalImageFiles && Array.isArray(additionalImageFiles)) {
+            for (const file of additionalImageFiles) {
+                const imageUpload = await FileUploadHelper.uploadToSpaces(file);
+                additional_images.push({
+                    additional_image: imageUpload.Location,
+                    additional_image_key: imageUpload.Key,
+                });
+            }
+        }
+
 
         const whoWeAreData: IWhoWeAre = {
             who_we_are_title_english: req.body.who_we_are_title_english,
             who_we_are_title_bangla: req.body.who_we_are_title_bangla,
             who_we_are_description_english: req.body.who_we_are_description_english,
             who_we_are_description_bangla: req.body.who_we_are_description_bangla,
+            who_we_are_details_english: req.body.who_we_are_details_english,
+            who_we_are_details_bangla: req.body.who_we_are_details_bangla,
             who_we_are_image,
             who_we_are_image_key,
+            who_we_are_additional_images: additional_images ?? [],
 
             who_we_are_services: {
                 who_we_are_item_image: services_image,

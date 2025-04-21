@@ -20,8 +20,20 @@ const WhoWeAreSchema = new Schema<IWhoWeAre>(
         who_we_are_title_bangla: { type: String },
         who_we_are_description_english: { type: String },
         who_we_are_description_bangla: { type: String },
+        who_we_are_details_english: { type: String },
+        who_we_are_details_bangla: { type: String },
         who_we_are_image: { type: String },
         who_we_are_image_key: { type: String },
+        who_we_are_additional_images: [
+            {
+                additional_image: {
+                    type: String,
+                },
+                additional_image_key: {
+                    type: String,
+                },
+            },
+        ],
 
         who_we_are_services: WhoWeAreItemSchema,
         who_we_are_migrants: WhoWeAreItemSchema,
