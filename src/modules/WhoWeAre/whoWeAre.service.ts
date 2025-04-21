@@ -21,8 +21,17 @@ const getWhoWeAreService = async () => {
     return result[0];
 };
 
+// update WhoWeAre info
+const updateWhoWeAreService = async (payload: Partial<IWhoWeAre>): Promise<any> => {
+    const result = await WhoWeAreModel.findOneAndUpdate({}, payload, {
+        new: true, // returns the updated doc
+        runValidators: true,
+    });
+    return result;
+};
 
 export const WhoWeAreService = {
     postWhoWeAreServices,
     getWhoWeAreService,
+    updateWhoWeAreService,
 };

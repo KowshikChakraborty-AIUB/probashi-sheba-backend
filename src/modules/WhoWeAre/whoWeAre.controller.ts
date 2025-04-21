@@ -161,7 +161,7 @@ const postWhoWeAre: RequestHandler = async (
 const getWhoWeAre = catchAsync(async (req, res) => {
     const result = await WhoWeAreService.getWhoWeAreService();
 
-    if (result.length === 0) {
+    if (!result) {
         throw new AppError(404, "No data found");
     }
 
@@ -174,9 +174,37 @@ const getWhoWeAre = catchAsync(async (req, res) => {
 
 });
 
+const updateWhoWeAre: RequestHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<any> => {
+    try {
+        const requestData = req.body;
+        
+
+        // ========== Update ==========
+        const result = await WhoWeAreService.updateWhoWeAreService(requestData);
+
+
+        if (result) {
+            return sendResponse(res, {
+                statusCode: httpStatus.OK,
+                success: true,
+                message: "About info Updated Successfully!",
+                data: result
+            });
+        } else {
+            throw new AppError(400, "About info Update Failed!");
+        }
+    } catch (error) {
+        next(error);
+    }
+};
+
 
 export const WhoWeAreController = {
     postWhoWeAre,
     getWhoWeAre,
-
+    updateWhoWeAre,
 };
