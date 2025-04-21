@@ -9,7 +9,18 @@ router
     .route("/")
     // .get(ForMigrantWorkerController.getForMigrantWorker)
     .post(
-        FileUploadHelper.ImageUpload.any(),
+        // FileUploadHelper.ImageUpload.fields([
+        //     { name: "who_we_are_image", maxCount: 1 },
+        //     { name: "who_we_are_item_image", maxCount: 1 },
+        // ]),
+        FileUploadHelper.ImageUpload.fields([
+            { name: "who_we_are_image", maxCount: 1 },
+            { name: "who_we_are_services_image", maxCount: 1 },
+            { name: "who_we_are_migrants_image", maxCount: 1 },
+            { name: "who_we_are_saved_image", maxCount: 1 },
+            { name: "who_we_are_days_image", maxCount: 1 },
+            { name: "who_we_are_employees_image", maxCount: 1 },
+        ]),
         WhoWeAreController.postWhoWeAre
     )
 // .patch(
