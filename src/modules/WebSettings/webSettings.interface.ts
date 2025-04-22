@@ -15,7 +15,6 @@ export interface IWebSettings {
     youtube_link?: string;
     whatsapp_link?: string;
     welcome_message?: string;
-    about?: string;
     privacy_policy?: string;
     terms?: string;
 };

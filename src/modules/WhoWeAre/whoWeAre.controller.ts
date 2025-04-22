@@ -231,11 +231,12 @@ const updateWhoWeAre: RequestHandler = async (
 ): Promise<any> => {
     try {
         const requestData = req.body;
-        
-        const files = req.files as Record<string, Express.Multer.File[]>;
-        console.log(requestData, 'requestData from update controller');
-        console.log(files, 'files from update controller');
 
+        const files = req.files as Record<string, Express.Multer.File[]>;
+
+        const currentData = await WhoWeAreService.getWhoWeAreService();
+        console.log(currentData);
+        
         // Initialize updateData with basic fields
         const updateData: Partial<IWhoWeAre> = {
             ...requestData
@@ -249,16 +250,34 @@ const updateWhoWeAre: RequestHandler = async (
         }
 
         // Handle additional images update if provided
-        if (files?.who_we_are_additional_images) {
-            const additional_images = [];
-            for (const file of files.who_we_are_additional_images) {
-                const upload = await FileUploadHelper.uploadToSpaces(file);
-                additional_images.push({
-                    additional_image: upload.Location,
-                    additional_image_key: upload.Key,
-                });
+        if (files?.who_we_are_additional_images || requestData.who_we_are_additional_images) {
+            const existingImages = currentData.who_we_are_additional_images || [];
+            const additional_images = [...existingImages]
+
+            // Handle new files from request body (if any)
+            if (requestData?.who_we_are_additional_images && Array.isArray(requestData.who_we_are_additional_images)) {
+                for (const file of requestData.who_we_are_additional_images) {
+                    // Only process if it's actually a new file (not just a URL string)
+                    if (file instanceof File || file instanceof Buffer) {
+                        const upload = await FileUploadHelper.uploadToSpaces(file);
+                        additional_images.push({
+                            additional_image: upload.Location,
+                            additional_image_key: upload.Key,
+                        });
+                    }
+                }
             }
-            updateData.who_we_are_additional_images = additional_images;
+
+            if (files?.who_we_are_additional_images) {
+                for (const file of files.who_we_are_additional_images) {
+                    const upload = await FileUploadHelper.uploadToSpaces(file);
+                    additional_images.push({
+                        additional_image: upload.Location,
+                        additional_image_key: upload.Key,
+                    });
+                }
+                updateData.who_we_are_additional_images = additional_images;
+            }
         }
 
         // services
